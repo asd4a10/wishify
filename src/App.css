@@ -1,0 +1,217 @@
+.wishify-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+	text-align: center;
+	margin-bottom: 30px;
+}
+
+header h1 {
+	font-size: 2.5rem;
+	color: #3498db;
+	margin-bottom: 10px;
+}
+
+.add-wish-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 30px;
+	background-color: #f5f5f5;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-wish-form input,
+.add-wish-form textarea {
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+}
+
+.add-wish-form textarea {
+	min-height: 80px;
+	resize: vertical;
+}
+
+.add-wish-form button {
+	padding: 12px;
+	background-color: #3498db;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.add-wish-form button:hover {
+	background-color: #2980b9;
+}
+
+.wishes-list h2 {
+	border-bottom: 2px solid #3498db;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+	color: #333;
+}
+
+.empty-message {
+	text-align: center;
+	color: #777;
+	font-style: italic;
+}
+
+.wish-item {
+	display: flex;
+	justify-content: space-between;
+	background-color: white;
+	margin-bottom: 15px;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s;
+}
+
+.wish-item:hover {
+	transform: translateY(-3px);
+}
+
+.wish-item.completed {
+	background-color: #f8f8f8;
+	border-left: 4px solid #2ecc71;
+}
+
+.wish-item.completed h3 {
+	text-decoration: line-through;
+	color: #7f8c8d;
+}
+
+.wish-content {
+	flex: 1;
+}
+
+.wish-content h3 {
+	margin: 0 0 10px 0;
+	color: #2c3e50;
+}
+
+.wish-content p {
+	margin: 0 0 10px 0;
+	color: #34495e;
+}
+
+.created-at {
+	display: block;
+	font-size: 0.8rem;
+	color: #7f8c8d;
+}
+
+.wish-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	margin-left: 20px;
+}
+
+.toggle-btn,
+.remove-btn {
+	padding: 8px 12px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9rem;
+}
+
+.toggle-btn {
+	background-color: #2ecc71;
+	color: white;
+}
+
+.toggle-btn:hover {
+	background-color: #27ae60;
+}
+
+.wish-item.completed .toggle-btn {
+	background-color: #95a5a6;
+}
+
+.remove-btn {
+	background-color: #e74c3c;
+	color: white;
+}
+
+.remove-btn:hover {
+	background-color: #c0392b;
+}
+
+@media (max-width: 600px) {
+	.wish-item {
+		flex-direction: column;
+	}
+
+	.wish-actions {
+		margin-left: 0;
+		margin-top: 10px;
+		flex-direction: row;
+	}
+}
+
+.add-wish-button {
+	display: block;
+	margin: 0 auto 30px;
+	padding: 12px 24px;
+	background-color: #3498db;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-wish-button:hover {
+	background-color: #2980b9;
+	transform: translateY(-2px);
+}
+
+.add-wish-button:active {
+	transform: translateY(0);
+}
+
+.add-wish-form h3 {
+	margin-top: 0;
+	color: #2c3e50;
+}
+
+.form-buttons {
+	display: flex;
+	gap: 10px;
+}
+
+.form-buttons button {
+	flex: 1;
+}
+
+.add-btn {
+	background-color: #2ecc71;
+}
+
+.add-btn:hover {
+	background-color: #27ae60;
+}
+
+.cancel-btn {
+	background-color: #95a5a6;
+}
+
+.cancel-btn:hover {
+	background-color: #7f8c8d;
+}
