@@ -123,7 +123,7 @@ const WishList = ({ userId }: WishListProps) => {
 			<div className="mb-6">
 				<button
 					onClick={() => setIsAddingWish(true)}
-					className="btn btn-primary px-4 py-2 font-medium flex items-center"
+					className="custom-btn btn-blue"
 				>
 					<span className="mr-2 text-xl">+</span>
 					Добавить новое желание

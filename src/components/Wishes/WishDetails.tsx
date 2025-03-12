@@ -173,9 +173,9 @@ const WishDetails = ({
 					<div className="flex gap-4 mt-8">
 						<button
 							onClick={() => onTogglePurchased(wish.id)}
-							className={`btn ${
-								wish.isPurchased ? "bg-gray-dark" : "btn-success"
-							} px-4 py-2`}
+							className={`custom-btn ${
+								wish.isPurchased ? "btn-gray" : "btn-green"
+							}`}
 						>
 							{wish.isPurchased ? "Вернуть" : "Купить"}
 						</button>
@@ -184,7 +184,7 @@ const WishDetails = ({
 								onRemove(wish.id);
 								onClose();
 							}}
-							className="btn btn-danger px-4 py-2"
+							className="custom-btn btn-red"
 						>
 							Удалить
 						</button>

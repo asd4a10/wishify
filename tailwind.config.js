@@ -5,26 +5,26 @@ export default {
 		extend: {
 			colors: {
 				primary: {
-					DEFAULT: "#3498db",
-					hover: "#2980b9",
+					DEFAULT: "#3490dc",
+					hover: "#2779bd",
 				},
 				success: {
-					DEFAULT: "#2ecc71",
-					hover: "#27ae60",
+					DEFAULT: "#38c172",
+					hover: "#2d995b",
 				},
 				danger: {
-					DEFAULT: "#e74c3c",
-					hover: "#c0392b",
+					DEFAULT: "#e3342f",
+					hover: "#cc1f1a",
 				},
 				gray: {
-					light: "#f5f5f5",
-					DEFAULT: "#95a5a6",
-					dark: "#7f8c8d",
+					light: "#f1f5f8",
+					DEFAULT: "#b8c2cc",
+					dark: "#8795a1",
 				},
 				text: {
-					primary: "#2c3e50",
-					secondary: "#34495e",
-					muted: "#7f8c8d",
+					primary: "#22292f",
+					secondary: "#3d4852",
+					muted: "#8795a1",
 				},
 			},
 		},

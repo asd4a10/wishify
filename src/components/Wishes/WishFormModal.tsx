@@ -169,16 +169,10 @@ const WishFormModal = ({ onSave, onClose }: WishFormModalProps) => {
 					</div>
 
 					<div className="flex gap-3 mt-6">
-						<button
-							onClick={handleSubmit}
-							className="btn btn-success px-5 py-2 font-medium"
-						>
+						<button onClick={handleSubmit} className="custom-btn btn-green">
 							Сохранить
 						</button>
-						<button
-							onClick={onClose}
-							className="btn bg-gray hover:bg-gray-dark px-5 py-2 font-medium"
-						>
+						<button onClick={onClose} className="custom-btn btn-gray">
 							Отмена
 						</button>
 					</div>

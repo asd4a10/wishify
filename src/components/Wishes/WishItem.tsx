@@ -74,7 +74,7 @@ const WishItem = ({
 
 					<div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-30">
 						<button
-							className="bg-white/80 hover:bg-white p-2 rounded-full"
+							className="icon-btn icon-btn-light"
 							onClick={(e) => {
 								e.stopPropagation();
 								onTogglePurchased(wish.id);
@@ -83,11 +83,11 @@ const WishItem = ({
 							{wish.isPurchased ? (
 								<span className="text-gray-dark text-lg">↩</span>
 							) : (
-								<span className="text-success text-lg">✓</span>
+								<span className="text-green-500 text-lg">✓</span>
 							)}
 						</button>
 						<button
-							className="bg-white/80 hover:bg-white p-2 rounded-full"
+							className="btn-icon btn-icon-light"
 							onClick={(e) => {
 								e.stopPropagation();
 								onRemove(wish.id);
@@ -117,7 +117,7 @@ const WishItem = ({
 
 					<div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
 						<button
-							className="bg-white/20 hover:bg-white/40 p-2 rounded-full"
+							className="icon-btn icon-btn-dark"
 							onClick={(e) => {
 								e.stopPropagation();
 								onTogglePurchased(wish.id);
@@ -130,7 +130,7 @@ const WishItem = ({
 							)}
 						</button>
 						<button
-							className="bg-white/20 hover:bg-white/40 p-2 rounded-full"
+							className="btn-icon btn-icon-dark"
 							onClick={(e) => {
 								e.stopPropagation();
 								onRemove(wish.id);
