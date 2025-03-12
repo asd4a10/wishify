@@ -125,27 +125,43 @@ export const removeWishAsync = createAsyncThunk(
 );
 
 // Обновление статуса желания
-export const toggleWishPurchasedAsync = createAsyncThunk(
-	"wishes/toggleWishPurchased",
-	async ({ id, isPurchased }: { id: string; isPurchased: boolean }) => {
+export const editWishAsync = createAsyncThunk(
+	"wishes/editWishAsync",
+	async (
+		{ id, changes }: { id: string; changes: Partial<Wish> },
+		{ getState }
+	) => {
+		// Получаем текущее состояние
+		const state = getState() as { wishes: WishesState };
+
+		// Находим текущее желание
+		const currentWish = state.wishes.items.find((wish) => wish.id === id);
+
+		if (!currentWish) {
+			throw new Error("Желание не найдено");
+		}
+
+		// Создаем полный объект, объединяя текущее желание с изменениями
+		const updatedWish = {
+			...currentWish,
+			...changes,
+		};
+
+		// Отправляем полный объект в PUT запросе
 		const response = await fetch(`${API_URL}/${id}`, {
-			method: "PATCH",
+			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ isPurchased }),
+			body: JSON.stringify(updatedWish),
 		});
 
 		if (!response.ok) {
-			throw new Error("Не удалось обновить статус желания");
+			throw new Error("Failed to edit wish");
 		}
 
-		const data = await response.json();
-		return {
-			...data,
-			createdAt: new Date(data.createdAt),
-			targetDate: data.targetDate ? new Date(data.targetDate) : null,
-		};
+		// Возвращаем только id и изменения для обновления Redux-состояния
+		return { id, changes };
 	}
 );
 
@@ -184,10 +200,19 @@ const wishesSlice = createSlice({
 		removeWish: (state, action: PayloadAction<string>) => {
 			state.items = state.items.filter((wish) => wish.id !== action.payload);
 		},
-		toggleWishPurchased: (state, action: PayloadAction<string>) => {
-			const wish = state.items.find((wish) => wish.id === action.payload);
-			if (wish) {
-				wish.isPurchased = !wish.isPurchased;
+		editWish: (
+			state,
+			action: PayloadAction<{ id: string; changes: Partial<Wish> }>
+		) => {
+			const { id, changes } = action.payload;
+			const wishIndex = state.items.findIndex((wish) => wish.id === id);
+
+			if (wishIndex !== -1) {
+				// Обновляем только указанные поля
+				state.items[wishIndex] = {
+					...state.items[wishIndex],
+					...changes,
+				};
 			}
 		},
 	},
@@ -232,27 +257,30 @@ const wishesSlice = createSlice({
 				state.error = action.error.message || "Не удалось удалить желание";
 			})
 
-			// Обработка toggleWishPurchasedAsync
-			.addCase(toggleWishPurchasedAsync.pending, (state) => {
+			// Обработка editWishAsync
+			.addCase(editWishAsync.pending, (state) => {
 				state.status = "loading";
 			})
-			.addCase(toggleWishPurchasedAsync.fulfilled, (state, action) => {
+			.addCase(editWishAsync.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				const index = state.items.findIndex(
 					(wish) => wish.id === action.payload.id
 				);
 				if (index !== -1) {
-					state.items[index] = action.payload;
+					state.items[index] = {
+						...state.items[index],
+						...action.payload.changes,
+					};
 				}
 			})
-			.addCase(toggleWishPurchasedAsync.rejected, (state, action) => {
+			.addCase(editWishAsync.rejected, (state, action) => {
 				state.status = "failed";
 				state.error =
-					action.error.message || "Не удалось обновить статус желания";
+					action.error.message || "Не удалось редактировать желание";
 			});
 	},
 });
 
 // Экспорт actions и reducer
-export const { addWish, removeWish, toggleWishPurchased } = wishesSlice.actions;
+export const { addWish, removeWish, editWish } = wishesSlice.actions;
 export default wishesSlice.reducer;

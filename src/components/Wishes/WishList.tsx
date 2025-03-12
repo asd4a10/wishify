@@ -4,9 +4,9 @@ import {
 	fetchWishes,
 	addWishAsync,
 	removeWishAsync,
-	toggleWishPurchasedAsync,
+	editWish,
+	editWishAsync,
 	removeWish,
-	toggleWishPurchased,
 	Wish,
 } from "../../features/wishes/wishesSlice";
 import WishItem from "./WishItem";
@@ -67,8 +67,16 @@ const WishList = ({ userId }: WishListProps) => {
 		const wish = wishes.find((w) => w.id === id);
 		if (!wish) return;
 
-		dispatch(toggleWishPurchased(id));
-		dispatch(toggleWishPurchasedAsync({ id, isPurchased: !wish.isPurchased }));
+		const isPurchased = !wish.isPurchased;
+
+		// Используем новую функцию editWish
+		dispatch(editWish({ id, changes: { isPurchased } }));
+		dispatch(editWishAsync({ id, changes: { isPurchased } }));
+	};
+
+	const handleEditWish = (id: string, changes: Partial<Wish>) => {
+		dispatch(editWish({ id, changes }));
+		dispatch(editWishAsync({ id, changes }));
 	};
 
 	const handleOpenDetails = (wish: Wish) => {
