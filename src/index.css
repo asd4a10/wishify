@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+/* Добавляем собственные компонентные стили с использованием директивы @apply */
+/* @layer components {
+	.wish-item {
+		@apply flex justify-between bg-white mb-4 p-4 rounded-lg shadow-md transition-transform hover:translate-y-[-3px];
+	}
+
+	.wish-item.completed {
+		@apply bg-gray-light border-l-4 border-success;
+	}
+
+	.btn {
+		@apply px-3 py-2 border-none rounded cursor-pointer text-white transition-all;
+	}
+
+	.btn-primary {
+		@apply bg-primary hover:bg-primary-hover;
+	}
+
+	.btn-success {
+		@apply bg-success hover:bg-success-hover;
+	}
+
+	.btn-danger {
+		@apply bg-danger hover:bg-danger-hover;
+	}
+
+	.clerk-button {
+		@apply bg-primary !important rounded !important;
+	}
+} */

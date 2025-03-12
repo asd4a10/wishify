@@ -7,14 +7,16 @@ interface DashboardProps {
 
 const Dashboard = ({ userId }: DashboardProps) => {
 	return (
-		<div className="wishify-container">
-			<header>
-				<div className="header-content">
-					<div>
-						<h1>Wishify</h1>
-						<p>Храните и отслеживайте свои цели и мечты</p>
+		<div className="max-w-3xl mx-auto p-5">
+			<header className="mb-8">
+				<div className="flex justify-between items-center">
+					<div className="flex flex-col items-start">
+						<h1 className="text-4xl font-bold text-primary mb-2">Wishify</h1>
+						<p className="text-text-secondary">
+							Храните и отслеживайте свои цели и мечты
+						</p>
 					</div>
-					<div className="user-section">
+					<div>
 						<UserButton />
 					</div>
 				</div>
