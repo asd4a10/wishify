@@ -25,32 +25,42 @@ const initialState: WishesState = {
 	error: null,
 };
 
+// Обновленный тип для параметров запроса
+type AddWishParams = {
+	title: string;
+	description: string;
+	userId: string; // Добавляем идентификатор пользователя
+};
+
 // Асинхронные действия с использованием createAsyncThunk
 
 // Получение списка желаний
-export const fetchWishes = createAsyncThunk("wishes/fetchWishes", async () => {
-	console.log("fetchWishes");
-	const username = "user_2sXlGpHGyRPAxXXUdOiG24rkUjA";
-	const response = await fetch(`${API_URL}?username=${username}`);
-	console.log("response", response);
-	if (!response.ok) {
-		throw new Error("Не удалось загрузить данные");
+export const fetchWishes = createAsyncThunk(
+	"wishes/fetchWishes",
+	async (userId: string) => {
+		console.log("fetchWishes for user", userId);
+		const response = await fetch(`${API_URL}?userId=${userId}`);
+
+		if (!response.ok) {
+			throw new Error("Не удалось загрузить данные");
+		}
+
+		const data = await response.json();
+		return data.map((wish: any) => ({
+			...wish,
+			createdAt: new Date(wish.createdAt),
+		}));
 	}
-	const data = await response.json();
-	// Преобразуем строки дат в объекты Date
-	return data.map((wish: any) => ({
-		...wish,
-		createdAt: new Date(wish.createdAt),
-	}));
-});
+);
 
 // Добавление нового желания
 export const addWishAsync = createAsyncThunk(
 	"wishes/addWish",
-	async ({ title, description }: { title: string; description: string }) => {
+	async ({ title, description, userId }: AddWishParams) => {
 		const newWish = {
 			title,
 			description,
+			userId, // Передаем идентификатор пользователя
 			completed: false,
 			createdAt: new Date(),
 		};
