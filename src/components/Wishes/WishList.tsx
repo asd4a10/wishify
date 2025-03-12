@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
 	fetchWishes,
@@ -8,10 +8,11 @@ import {
 	addWish,
 	removeWish,
 	toggleWishPurchased,
+	Wish,
 } from "../../features/wishes/wishesSlice";
 import WishItem from "./WishItem";
 import WishForm from "./WishForm";
-import { useState } from "react";
+import WishDetails from "./WishDetails";
 
 interface WishListProps {
 	userId: string;
@@ -19,6 +20,7 @@ interface WishListProps {
 
 const WishList = ({ userId }: WishListProps) => {
 	const [isAddingWish, setIsAddingWish] = useState(false);
+	const [selectedWish, setSelectedWish] = useState<Wish | null>(null);
 	const dispatch = useAppDispatch();
 	const {
 		items: wishes,
@@ -33,7 +35,7 @@ const WishList = ({ userId }: WishListProps) => {
 		}
 	}, [status, dispatch, userId]);
 
-	// Обработчики действий
+	// Обработчики
 	const handleAddWish = (
 		title: string,
 		description: string,
@@ -42,17 +44,11 @@ const WishList = ({ userId }: WishListProps) => {
 		productUrl: string,
 		imageUrl: string
 	) => {
-		// Оптимистичное обновление UI
-		// dispatch(
-		// 	addWish(title, description, price, targetDate, productUrl, imageUrl)
-		// );
-
-		// Отправка запроса на сервер
 		dispatch(
 			addWishAsync({
 				title,
 				description,
-				username: userId, // Теперь используем username вместо userId
+				username: userId,
 				price,
 				targetDate: targetDate || undefined,
 				productUrl,
@@ -60,7 +56,6 @@ const WishList = ({ userId }: WishListProps) => {
 			})
 		);
 
-		// Скрываем форму
 		setIsAddingWish(false);
 	};
 
@@ -77,48 +72,91 @@ const WishList = ({ userId }: WishListProps) => {
 		dispatch(toggleWishPurchasedAsync({ id, isPurchased: !wish.isPurchased }));
 	};
 
-	// Отображение содержимого в зависимости от статуса
+	const handleOpenDetails = (wish: Wish) => {
+		setSelectedWish(wish);
+	};
+
+	const handleCloseDetails = () => {
+		setSelectedWish(null);
+	};
+
+	// Рендер содержимого
 	let content;
 
 	if (status === "loading" && wishes.length === 0) {
-		content = <div className="loading">Загрузка...</div>;
+		content = (
+			<div className="flex justify-center items-center h-40 text-primary">
+				Загрузка...
+			</div>
+		);
 	} else if (status === "failed") {
-		content = <div className="error">Ошибка: {error}</div>;
+		content = (
+			<div className="bg-danger/10 text-danger p-4 rounded-lg">{error}</div>
+		);
 	} else if (wishes.length === 0) {
 		content = (
-			<p className="empty-message">У вас пока нет желаний. Добавьте новое!</p>
+			<div className="text-center p-8 bg-gray-light rounded-lg">
+				<p className="text-lg text-text-secondary">
+					У вас пока нет желаний. Добавьте новое!
+				</p>
+			</div>
 		);
 	} else {
-		content = wishes.map((wish) => (
-			<WishItem
-				key={wish.id}
-				wish={wish}
-				onTogglePurchased={handleTogglePurchased}
-				onRemove={handleRemoveWish}
-			/>
-		));
+		content = (
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+				{wishes.map((wish) => (
+					<WishItem
+						key={wish.id}
+						wish={wish}
+						onTogglePurchased={handleTogglePurchased}
+						onRemove={handleRemoveWish}
+						onOpenDetails={handleOpenDetails}
+					/>
+				))}
+			</div>
+		);
 	}
 
 	return (
 		<>
-			{!isAddingWish ? (
-				<button
-					className="add-wish-button"
-					onClick={() => setIsAddingWish(true)}
-				>
-					+ Добавить новое желание
-				</button>
-			) : (
-				<WishForm
-					onSave={handleAddWish}
-					onCancel={() => setIsAddingWish(false)}
+			{/* Кнопка добавления */}
+			<div className="mb-6">
+				{!isAddingWish ? (
+					<button
+						onClick={() => setIsAddingWish(true)}
+						className="btn btn-primary px-4 py-2 font-medium flex items-center"
+					>
+						<span className="mr-2 text-xl">+</span>
+						Добавить новое желание
+					</button>
+				) : (
+					<WishForm
+						onSave={handleAddWish}
+						onCancel={() => setIsAddingWish(false)}
+					/>
+				)}
+			</div>
+
+			{/* Заголовок и фильтры */}
+			<div className="mb-6">
+				<h2 className="text-2xl font-bold text-text-primary mb-2">
+					Ваши желания
+				</h2>
+				{/* Здесь можно добавить фильтры */}
+			</div>
+
+			{/* Сетка желаний */}
+			{content}
+
+			{/* Модальное окно с деталями */}
+			{selectedWish && (
+				<WishDetails
+					wish={selectedWish}
+					onClose={handleCloseDetails}
+					onTogglePurchased={handleTogglePurchased}
+					onRemove={handleRemoveWish}
 				/>
 			)}
-
-			<div className="wishes-list">
-				<h2>Ваши желания</h2>
-				{content}
-			</div>
 		</>
 	);
 };

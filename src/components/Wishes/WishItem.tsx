@@ -1,87 +1,146 @@
 import { Wish } from "../../features/wishes/wishesSlice";
 
+// Массив цветов для карточек без изображений
+const BACKGROUND_COLORS = [
+	"bg-blue-500",
+	"bg-purple-500",
+	"bg-green-500",
+	"bg-yellow-500",
+	"bg-pink-500",
+	"bg-indigo-500",
+	"bg-red-500",
+	"bg-teal-500",
+	"bg-orange-500",
+	"bg-cyan-500",
+];
+
 interface WishItemProps {
 	wish: Wish;
 	onTogglePurchased: (id: string) => void;
 	onRemove: (id: string) => void;
+	onOpenDetails: (wish: Wish) => void;
 }
 
-const WishItem = ({ wish, onTogglePurchased, onRemove }: WishItemProps) => {
-	// Форматирование цены
-	const formattedPrice = wish.price
-		? new Intl.NumberFormat("ru-RU", {
-				style: "currency",
-				currency: "KZT",
-		  }).format(wish.price)
-		: "";
+const WishItem = ({
+	wish,
+	onTogglePurchased,
+	onRemove,
+	onOpenDetails,
+}: WishItemProps) => {
+	const hasImage = wish.imageUrl && wish.imageUrl.trim() !== "";
+
+	// Получаем уникальный цвет на основе id желания
+	const getColorForWish = (wishId: string) => {
+		// Используем сумму кодов символов id как простой хеш
+		const hashSum = wishId
+			.split("")
+			.reduce((sum, char) => sum + char.charCodeAt(0), 0);
+
+		// Получаем индекс цвета из массива цветов
+		const colorIndex = hashSum % BACKGROUND_COLORS.length;
+		return BACKGROUND_COLORS[colorIndex];
+	};
+
+	// Получаем цвет для текущего элемента
+	const bgColorClass = hasImage ? "" : getColorForWish(wish.id);
 
 	return (
-		<div className={`wish-item ${wish.isPurchased ? "completed" : ""}`}>
-			<div className="flex-1">
-				<h3
-					className={`text-lg font-semibold mb-2 ${
-						wish.isPurchased
-							? "text-gray-dark line-through"
-							: "text-text-primary"
-					}`}
-				>
-					{wish.title}
-				</h3>
-				{wish.description && (
-					<p className="text-text-secondary mb-2">{wish.description}</p>
-				)}
+		<div
+			className={`wish-card ${wish.isPurchased ? "opacity-60" : ""} ${
+				hasImage ? "has-image" : "no-image"
+			}`}
+			onClick={() => onOpenDetails(wish)}
+		>
+			{hasImage ? (
+				// Карточка с изображением
+				<div className="relative h-full overflow-hidden rounded-lg shadow-md group">
+					<div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity z-10" />
 
-				{wish.price > 0 && (
-					<p className="font-medium text-primary mb-1">{formattedPrice}</p>
-				)}
+					<img
+						src={wish.imageUrl}
+						alt={wish.title}
+						className="w-full h-full object-cover"
+					/>
 
-				{wish.targetDate && (
-					<p className="text-sm text-text-muted mb-1">
-						Целевая дата: {wish.targetDate.toLocaleDateString()}
-					</p>
-				)}
-
-				{wish.productUrl && (
-					<a
-						href={wish.productUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-primary hover:underline text-sm block mb-1"
-					>
-						Ссылка на товар
-					</a>
-				)}
-
-				{wish.imageUrl && (
-					<div className="mt-2 mb-2">
-						<img
-							src={wish.imageUrl}
-							alt={wish.title}
-							className="max-h-32 rounded object-contain"
-						/>
+					<div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent z-20">
+						<h3
+							className={`text-white font-semibold text-lg ${
+								wish.isPurchased ? "line-through" : ""
+							}`}
+						>
+							{wish.title}
+						</h3>
 					</div>
-				)}
 
-				<span className="text-xs text-text-muted block mt-2">
-					Создано: {wish.createdAt.toLocaleDateString()}
-				</span>
-			</div>
-			<div className="flex flex-col gap-2 ml-4">
-				<button
-					className={`btn ${
-						wish.isPurchased ? "bg-gray-dark" : "btn-success"
-					} text-sm`}
-					onClick={() => onTogglePurchased(wish.id)}
+					<div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-30">
+						<button
+							className="bg-white/80 hover:bg-white p-2 rounded-full"
+							onClick={(e) => {
+								e.stopPropagation();
+								onTogglePurchased(wish.id);
+							}}
+						>
+							{wish.isPurchased ? (
+								<span className="text-gray-dark text-lg">↩</span>
+							) : (
+								<span className="text-success text-lg">✓</span>
+							)}
+						</button>
+						<button
+							className="bg-white/80 hover:bg-white p-2 rounded-full"
+							onClick={(e) => {
+								e.stopPropagation();
+								onRemove(wish.id);
+							}}
+						>
+							<span className="text-danger text-lg">×</span>
+						</button>
+					</div>
+				</div>
+			) : (
+				// Карточка без изображения с цветным фоном
+				<div
+					className={`relative h-full ${bgColorClass} text-white rounded-lg shadow-md p-4 group hover:shadow-lg transition-transform hover:scale-[1.02]`}
 				>
-					{wish.isPurchased ? "Вернуть" : "Купить"}
-				</button>
-				<button
-					className="btn btn-danger text-sm"
-					onClick={() => onRemove(wish.id)}
-				>
-					Удалить
-				</button>
-			</div>
+					<h3
+						className={`font-semibold text-xl mb-2 ${
+							wish.isPurchased ? "line-through opacity-70" : ""
+						}`}
+					>
+						{wish.title}
+					</h3>
+
+					{/* Небольшая декоративная иконка */}
+					<div className="absolute bottom-3 right-3 opacity-20 text-5xl">
+						{wish.isPurchased ? "✓" : "★"}
+					</div>
+
+					<div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+						<button
+							className="bg-white/20 hover:bg-white/40 p-2 rounded-full"
+							onClick={(e) => {
+								e.stopPropagation();
+								onTogglePurchased(wish.id);
+							}}
+						>
+							{wish.isPurchased ? (
+								<span className="text-white text-lg">↩</span>
+							) : (
+								<span className="text-white text-lg">✓</span>
+							)}
+						</button>
+						<button
+							className="bg-white/20 hover:bg-white/40 p-2 rounded-full"
+							onClick={(e) => {
+								e.stopPropagation();
+								onRemove(wish.id);
+							}}
+						>
+							<span className="text-white text-lg">×</span>
+						</button>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
