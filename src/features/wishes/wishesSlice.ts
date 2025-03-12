@@ -3,12 +3,17 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 // API URL
 const API_URL = "https://wishify.kz/api/v1/wishes";
 
-// Типы
+// Обновленный тип Wish
 export interface Wish {
 	id: string;
 	title: string;
 	description: string;
-	completed: boolean;
+	isPurchased: boolean; // было completed
+	username: string;
+	price: number;
+	targetDate: Date;
+	imageUrl: string;
+	productUrl: string;
 	createdAt: Date;
 }
 
@@ -29,7 +34,11 @@ const initialState: WishesState = {
 type AddWishParams = {
 	title: string;
 	description: string;
-	userId: string; // Добавляем идентификатор пользователя
+	username: string; // было userId
+	price?: number;
+	targetDate?: Date;
+	imageUrl?: string;
+	productUrl?: string;
 };
 
 // Асинхронные действия с использованием createAsyncThunk
@@ -37,9 +46,9 @@ type AddWishParams = {
 // Получение списка желаний
 export const fetchWishes = createAsyncThunk(
 	"wishes/fetchWishes",
-	async (userId: string) => {
-		console.log("fetchWishes for user", userId);
-		const response = await fetch(`${API_URL}?userId=${userId}`);
+	async (username: string) => {
+		console.log("fetchWishes for user", username);
+		const response = await fetch(`${API_URL}?username=${username}`);
 
 		if (!response.ok) {
 			throw new Error("Не удалось загрузить данные");
@@ -49,6 +58,7 @@ export const fetchWishes = createAsyncThunk(
 		return data.map((wish: any) => ({
 			...wish,
 			createdAt: new Date(wish.createdAt),
+			targetDate: wish.targetDate ? new Date(wish.targetDate) : null,
 		}));
 	}
 );
@@ -56,12 +66,24 @@ export const fetchWishes = createAsyncThunk(
 // Добавление нового желания
 export const addWishAsync = createAsyncThunk(
 	"wishes/addWish",
-	async ({ title, description, userId }: AddWishParams) => {
+	async ({
+		title,
+		description,
+		username,
+		price,
+		targetDate,
+		imageUrl,
+		productUrl,
+	}: AddWishParams) => {
 		const newWish = {
 			title,
 			description,
-			userId, // Передаем идентификатор пользователя
-			completed: false,
+			username,
+			isPurchased: false, // было completed
+			price: price || 0,
+			targetDate: targetDate || null,
+			imageUrl: imageUrl || "",
+			productUrl: productUrl || "",
 			createdAt: new Date(),
 		};
 
@@ -81,6 +103,7 @@ export const addWishAsync = createAsyncThunk(
 		return {
 			...data,
 			createdAt: new Date(data.createdAt),
+			targetDate: data.targetDate ? new Date(data.targetDate) : null,
 		};
 	}
 );
@@ -102,15 +125,15 @@ export const removeWishAsync = createAsyncThunk(
 );
 
 // Обновление статуса желания
-export const toggleWishCompletedAsync = createAsyncThunk(
-	"wishes/toggleWishCompleted",
-	async ({ id, completed }: { id: string; completed: boolean }) => {
+export const toggleWishPurchasedAsync = createAsyncThunk(
+	"wishes/toggleWishPurchased",
+	async ({ id, isPurchased }: { id: string; isPurchased: boolean }) => {
 		const response = await fetch(`${API_URL}/${id}`, {
 			method: "PATCH",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ completed }),
+			body: JSON.stringify({ isPurchased }),
 		});
 
 		if (!response.ok) {
@@ -121,6 +144,7 @@ export const toggleWishCompletedAsync = createAsyncThunk(
 		return {
 			...data,
 			createdAt: new Date(data.createdAt),
+			targetDate: data.targetDate ? new Date(data.targetDate) : null,
 		};
 	}
 );
@@ -135,12 +159,24 @@ const wishesSlice = createSlice({
 			reducer: (state, action: PayloadAction<Wish>) => {
 				state.items.push(action.payload);
 			},
-			prepare: (title: string, description: string) => ({
+			prepare: (
+				title: string,
+				description: string,
+				price: number,
+				targetDate: Date,
+				productUrl: string,
+				imageUrl: string
+			) => ({
 				payload: {
 					id: Date.now().toString(), // Временный ID до ответа от сервера
 					title,
 					description,
-					completed: false,
+					isPurchased: false, // было completed
+					username: "",
+					price: price || 0,
+					targetDate: targetDate || null,
+					imageUrl: imageUrl || "",
+					productUrl: productUrl || "",
 					createdAt: new Date(),
 				},
 			}),
@@ -148,10 +184,10 @@ const wishesSlice = createSlice({
 		removeWish: (state, action: PayloadAction<string>) => {
 			state.items = state.items.filter((wish) => wish.id !== action.payload);
 		},
-		toggleWishCompleted: (state, action: PayloadAction<string>) => {
+		toggleWishPurchased: (state, action: PayloadAction<string>) => {
 			const wish = state.items.find((wish) => wish.id === action.payload);
 			if (wish) {
-				wish.completed = !wish.completed;
+				wish.isPurchased = !wish.isPurchased;
 			}
 		},
 	},
@@ -196,11 +232,11 @@ const wishesSlice = createSlice({
 				state.error = action.error.message || "Не удалось удалить желание";
 			})
 
-			// Обработка toggleWishCompletedAsync
-			.addCase(toggleWishCompletedAsync.pending, (state) => {
+			// Обработка toggleWishPurchasedAsync
+			.addCase(toggleWishPurchasedAsync.pending, (state) => {
 				state.status = "loading";
 			})
-			.addCase(toggleWishCompletedAsync.fulfilled, (state, action) => {
+			.addCase(toggleWishPurchasedAsync.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				const index = state.items.findIndex(
 					(wish) => wish.id === action.payload.id
@@ -209,7 +245,7 @@ const wishesSlice = createSlice({
 					state.items[index] = action.payload;
 				}
 			})
-			.addCase(toggleWishCompletedAsync.rejected, (state, action) => {
+			.addCase(toggleWishPurchasedAsync.rejected, (state, action) => {
 				state.status = "failed";
 				state.error =
 					action.error.message || "Не удалось обновить статус желания";
@@ -218,5 +254,5 @@ const wishesSlice = createSlice({
 });
 
 // Экспорт actions и reducer
-export const { addWish, removeWish, toggleWishCompleted } = wishesSlice.actions;
+export const { addWish, removeWish, toggleWishPurchased } = wishesSlice.actions;
 export default wishesSlice.reducer;

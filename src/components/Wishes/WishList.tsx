@@ -4,10 +4,10 @@ import {
 	fetchWishes,
 	addWishAsync,
 	removeWishAsync,
-	toggleWishCompletedAsync,
+	toggleWishPurchasedAsync,
 	addWish,
 	removeWish,
-	toggleWishCompleted,
+	toggleWishPurchased,
 } from "../../features/wishes/wishesSlice";
 import WishItem from "./WishItem";
 import WishForm from "./WishForm";
@@ -34,16 +34,29 @@ const WishList = ({ userId }: WishListProps) => {
 	}, [status, dispatch, userId]);
 
 	// Обработчики действий
-	const handleAddWish = (title: string, description: string) => {
+	const handleAddWish = (
+		title: string,
+		description: string,
+		price: number,
+		targetDate: Date | null,
+		productUrl: string,
+		imageUrl: string
+	) => {
 		// Оптимистичное обновление UI
-		dispatch(addWish(title, description));
+		// dispatch(
+		// 	addWish(title, description, price, targetDate, productUrl, imageUrl)
+		// );
 
 		// Отправка запроса на сервер
 		dispatch(
 			addWishAsync({
 				title,
 				description,
-				userId,
+				username: userId, // Теперь используем username вместо userId
+				price,
+				targetDate: targetDate || undefined,
+				productUrl,
+				imageUrl,
 			})
 		);
 
@@ -56,12 +69,12 @@ const WishList = ({ userId }: WishListProps) => {
 		dispatch(removeWishAsync(id));
 	};
 
-	const handleToggleCompleted = (id: string) => {
+	const handleTogglePurchased = (id: string) => {
 		const wish = wishes.find((w) => w.id === id);
 		if (!wish) return;
 
-		dispatch(toggleWishCompleted(id));
-		dispatch(toggleWishCompletedAsync({ id, completed: !wish.completed }));
+		dispatch(toggleWishPurchased(id));
+		dispatch(toggleWishPurchasedAsync({ id, isPurchased: !wish.isPurchased }));
 	};
 
 	// Отображение содержимого в зависимости от статуса
@@ -80,7 +93,7 @@ const WishList = ({ userId }: WishListProps) => {
 			<WishItem
 				key={wish.id}
 				wish={wish}
-				onToggleComplete={handleToggleCompleted}
+				onTogglePurchased={handleTogglePurchased}
 				onRemove={handleRemoveWish}
 			/>
 		));
