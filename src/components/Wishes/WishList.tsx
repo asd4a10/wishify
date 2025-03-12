@@ -11,8 +11,8 @@ import {
 	Wish,
 } from "../../features/wishes/wishesSlice";
 import WishItem from "./WishItem";
-import WishForm from "./WishForm";
 import WishDetails from "./WishDetails";
+import WishFormModal from "./WishFormModal";
 
 interface WishListProps {
 	userId: string;
@@ -56,7 +56,7 @@ const WishList = ({ userId }: WishListProps) => {
 			})
 		);
 
-		setIsAddingWish(false);
+		// Форма закроется автоматически внутри модального компонента
 	};
 
 	const handleRemoveWish = (id: string) => {
@@ -121,20 +121,13 @@ const WishList = ({ userId }: WishListProps) => {
 		<>
 			{/* Кнопка добавления */}
 			<div className="mb-6">
-				{!isAddingWish ? (
-					<button
-						onClick={() => setIsAddingWish(true)}
-						className="btn btn-primary px-4 py-2 font-medium flex items-center"
-					>
-						<span className="mr-2 text-xl">+</span>
-						Добавить новое желание
-					</button>
-				) : (
-					<WishForm
-						onSave={handleAddWish}
-						onCancel={() => setIsAddingWish(false)}
-					/>
-				)}
+				<button
+					onClick={() => setIsAddingWish(true)}
+					className="btn btn-primary px-4 py-2 font-medium flex items-center"
+				>
+					<span className="mr-2 text-xl">+</span>
+					Добавить новое желание
+				</button>
 			</div>
 
 			{/* Заголовок и фильтры */}
@@ -155,6 +148,14 @@ const WishList = ({ userId }: WishListProps) => {
 					onClose={handleCloseDetails}
 					onTogglePurchased={handleTogglePurchased}
 					onRemove={handleRemoveWish}
+				/>
+			)}
+
+			{/* Модальное окно с формой добавления */}
+			{isAddingWish && (
+				<WishFormModal
+					onSave={handleAddWish}
+					onClose={() => setIsAddingWish(false)}
 				/>
 			)}
 		</>
