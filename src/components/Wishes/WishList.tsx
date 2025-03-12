@@ -5,7 +5,6 @@ import {
 	addWishAsync,
 	removeWishAsync,
 	toggleWishPurchasedAsync,
-	addWish,
 	removeWish,
 	toggleWishPurchased,
 	Wish,
