@@ -124,44 +124,53 @@ export const removeWishAsync = createAsyncThunk(
 	}
 );
 
-// Обновление статуса желания
+// Асинхронный thunk для обновления желания на сервере
 export const editWishAsync = createAsyncThunk(
 	"wishes/editWishAsync",
 	async (
 		{ id, changes }: { id: string; changes: Partial<Wish> },
 		{ getState }
 	) => {
-		// Получаем текущее состояние
-		const state = getState() as { wishes: WishesState };
+		try {
+			// Получаем текущее состояние
+			const state = getState() as { wishes: WishesState };
 
-		// Находим текущее желание
-		const currentWish = state.wishes.items.find((wish) => wish.id === id);
+			// Находим текущее желание
+			const currentWish = state.wishes.items.find((wish) => wish.id === id);
 
-		if (!currentWish) {
-			throw new Error("Желание не найдено");
+			if (!currentWish) {
+				throw new Error("Желание не найдено");
+			}
+
+			// Создаем полный обновленный объект
+			const updatedWish = {
+				...currentWish,
+				...changes,
+			};
+
+			// Отправляем запрос на сервер
+			const response = await fetch(`${API_URL}/${id}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(updatedWish),
+			});
+
+			if (!response.ok) {
+				throw new Error("Не удалось обновить желание");
+			}
+
+			// Возвращаем ответ сервера или информацию об обновлении
+			const data = await response.json();
+			return {
+				id,
+				changes: data, // Возвращаем полученные с сервера данные
+			};
+		} catch (error) {
+			console.error("Error updating wish:", error);
+			throw error;
 		}
-
-		// Создаем полный объект, объединяя текущее желание с изменениями
-		const updatedWish = {
-			...currentWish,
-			...changes,
-		};
-
-		// Отправляем полный объект в PUT запросе
-		const response = await fetch(`${API_URL}/${id}`, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(updatedWish),
-		});
-
-		if (!response.ok) {
-			throw new Error("Failed to edit wish");
-		}
-
-		// Возвращаем только id и изменения для обновления Redux-состояния
-		return { id, changes };
 	}
 );
 
@@ -205,14 +214,10 @@ const wishesSlice = createSlice({
 			action: PayloadAction<{ id: string; changes: Partial<Wish> }>
 		) => {
 			const { id, changes } = action.payload;
-			const wishIndex = state.items.findIndex((wish) => wish.id === id);
-
-			if (wishIndex !== -1) {
-				// Обновляем только указанные поля
-				state.items[wishIndex] = {
-					...state.items[wishIndex],
-					...changes,
-				};
+			const existingWish = state.items.find((wish) => wish.id === id);
+			if (existingWish) {
+				// Обновляем существующее желание всеми предоставленными изменениями
+				Object.assign(existingWish, changes);
 			}
 		},
 	},
@@ -263,14 +268,23 @@ const wishesSlice = createSlice({
 			})
 			.addCase(editWishAsync.fulfilled, (state, action) => {
 				state.status = "succeeded";
+
+				// Обновляем локальное состояние только после успешного ответа сервера
 				const index = state.items.findIndex(
 					(wish) => wish.id === action.payload.id
 				);
+
 				if (index !== -1) {
-					state.items[index] = {
-						...state.items[index],
-						...action.payload.changes,
-					};
+					// Если получаем полный объект с сервера
+					if (
+						typeof action.payload.changes === "object" &&
+						action.payload.changes !== null
+					) {
+						state.items[index] = {
+							...state.items[index],
+							...action.payload.changes,
+						};
+					}
 				}
 			})
 			.addCase(editWishAsync.rejected, (state, action) => {

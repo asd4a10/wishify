@@ -75,9 +75,33 @@ const WishList = ({ userId }: WishListProps) => {
 		dispatch(editWishAsync({ id, changes: { isPurchased } }));
 	};
 
-	const handleEditWish = (wish: Wish) => {
-		console.log("Edit wish:", wish);
-		setIsDetailsOpen(false);
+	const handleEditWish = async (wish: Wish) => {
+		try {
+			setIsDetailsOpen(false);
+
+			// Показываем загрузку
+			console.log("Начало обновления желания...");
+
+			// Отправляем запрос к серверу
+			const result = await dispatch(
+				editWishAsync({
+					id: wish.id,
+					changes: {
+						title: wish.title,
+						description: wish.description,
+						price: wish.price,
+						targetDate: wish.targetDate,
+						productUrl: wish.productUrl,
+						imageUrl: wish.imageUrl,
+					},
+				})
+			).unwrap(); // unwrap() позволяет получить доступ к возвращаемому результату
+
+			console.log("Желание успешно обновлено:", result);
+		} catch (error) {
+			console.error("Ошибка при обновлении желания:", error);
+			// Можно также показать пользователю сообщение об ошибке
+		}
 	};
 
 	const handleOpenDetails = (wish: Wish) => {
