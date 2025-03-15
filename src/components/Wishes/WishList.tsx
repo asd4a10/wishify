@@ -20,6 +20,7 @@ interface WishListProps {
 const WishList = ({ userId }: WishListProps) => {
 	const [isAddingWish, setIsAddingWish] = useState(false);
 	const [selectedWish, setSelectedWish] = useState<Wish | null>(null);
+	const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 	const dispatch = useAppDispatch();
 	const {
 		items: wishes,
@@ -74,17 +75,18 @@ const WishList = ({ userId }: WishListProps) => {
 		dispatch(editWishAsync({ id, changes: { isPurchased } }));
 	};
 
-	const handleEditWish = (id: string, changes: Partial<Wish>) => {
-		dispatch(editWish({ id, changes }));
-		dispatch(editWishAsync({ id, changes }));
+	const handleEditWish = (wish: Wish) => {
+		console.log("Edit wish:", wish);
+		setIsDetailsOpen(false);
 	};
 
 	const handleOpenDetails = (wish: Wish) => {
 		setSelectedWish(wish);
+		setIsDetailsOpen(true);
 	};
 
 	const handleCloseDetails = () => {
-		setSelectedWish(null);
+		setIsDetailsOpen(false);
 	};
 
 	// Рендер содержимого
@@ -152,8 +154,10 @@ const WishList = ({ userId }: WishListProps) => {
 			{selectedWish && (
 				<WishDetails
 					wish={selectedWish}
+					open={isDetailsOpen}
 					onClose={handleCloseDetails}
 					onTogglePurchased={handleTogglePurchased}
+					onEdit={handleEditWish}
 					onRemove={handleRemoveWish}
 				/>
 			)}

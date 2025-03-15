@@ -1,4 +1,26 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import {
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Button,
+	TextField,
+	IconButton,
+	Box,
+	Stack,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
+
+// Интерфейс для начальных данных
+interface InitialWishData {
+	title: string;
+	description: string;
+	price: number;
+	targetDate: Date | null;
+	productUrl: string;
+	imageUrl: string;
+}
 
 interface WishFormModalProps {
 	onSave: (
@@ -10,175 +32,115 @@ interface WishFormModalProps {
 		imageUrl: string
 	) => void;
 	onClose: () => void;
+	isEdit?: boolean; // Новое свойство для определения режима редактирования
+	initialData?: InitialWishData; // Начальные данные для режима редактирования
 }
 
-const WishFormModal = ({ onSave, onClose }: WishFormModalProps) => {
-	const [title, setTitle] = useState("");
-	const [description, setDescription] = useState("");
-	const [price, setPrice] = useState("");
-	const [targetDate, setTargetDate] = useState("");
-	const [productUrl, setProductUrl] = useState("");
-	const [imageUrl, setImageUrl] = useState("");
+const WishFormModal = ({
+	onSave,
+	onClose,
+	isEdit = false,
+	initialData = {
+		title: "",
+		description: "",
+		price: 0,
+		targetDate: null,
+		productUrl: "",
+		imageUrl: "",
+	},
+}: WishFormModalProps) => {
+	// Используем initialData для начальных значений состояний
+	const [title, setTitle] = useState(initialData.title);
+	const [description, setDescription] = useState(initialData.description);
+	const [price, setPrice] = useState(initialData.price);
+	const [targetDate, setTargetDate] = useState<Date | null>(
+		initialData.targetDate
+	);
+	const [productUrl, setProductUrl] = useState(initialData.productUrl);
+	const [imageUrl, setImageUrl] = useState(initialData.imageUrl);
 
-	// Ref для модального окна
-	const modalRef = useRef<HTMLDivElement>(null);
-
-	// Обработчик клика для закрытия при клике вне формы
-	const handleBackdropClick = (e: React.MouseEvent) => {
-		if (e.target === e.currentTarget) {
-			onClose();
+	const handleSave = () => {
+		// Проверяем, что заголовок заполнен
+		if (!title.trim()) {
+			// Можно добавить состояние ошибки и показать пользователю
+			return;
 		}
-	};
 
-	// Обработчик нажатия клавиши Escape
-	useEffect(() => {
-		const handleEscapeKey = (e: KeyboardEvent) => {
-			if (e.key === "Escape") {
-				onClose();
-			}
-		};
-
-		document.addEventListener("keydown", handleEscapeKey);
-
-		return () => {
-			document.removeEventListener("keydown", handleEscapeKey);
-		};
-	}, [onClose]);
-
-	const handleSubmit = () => {
-		if (title.trim() === "") return;
-
-		const priceValue = parseFloat(price) || 0;
-		const dateValue = targetDate ? new Date(targetDate) : null;
-
-		onSave(title, description, priceValue, dateValue, productUrl, imageUrl);
-
-		// Сброс формы
-		setTitle("");
-		setDescription("");
-		setPrice("");
-		setTargetDate("");
-		setProductUrl("");
-		setImageUrl("");
-
-		// Закрытие модального окна
+		onSave(title, description, price, targetDate, productUrl, imageUrl);
 		onClose();
 	};
 
 	return (
-		<div
-			className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-			onClick={handleBackdropClick}
-		>
-			<div
-				ref={modalRef}
-				className="bg-white rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto"
-				onClick={(e) => e.stopPropagation()}
-			>
-				<div className="p-6">
-					<div className="flex justify-between items-start mb-4">
-						<h2 className="text-2xl font-bold text-text-primary">
-							Новое желание
-						</h2>
-						<button
-							onClick={onClose}
-							className="text-2xl text-gray-dark hover:text-text-primary"
-						>
-							×
-						</button>
-					</div>
+		<Dialog open onClose={onClose} maxWidth="md" fullWidth>
+			<DialogTitle>
+				<Box display="flex" justifyContent="space-between" alignItems="center">
+					{isEdit ? "Редактирование желания" : "Добавление нового желания"}
+					<IconButton onClick={onClose}>
+						<Close />
+					</IconButton>
+				</Box>
+			</DialogTitle>
 
-					<div className="grid gap-4">
-						<div>
-							<label className="block text-sm font-medium text-text-secondary mb-1">
-								Название*
-							</label>
-							<input
-								type="text"
-								value={title}
-								onChange={(e) => setTitle(e.target.value)}
-								placeholder="Что вы хотите?"
-								className="w-full p-2 border border-gray rounded-md"
-								autoFocus
-							/>
-						</div>
+			<DialogContent>
+				<Stack spacing={3} mt={2}>
+					<TextField
+						label="Название"
+						value={title}
+						onChange={(e) => setTitle(e.target.value)}
+						fullWidth
+						required
+						autoFocus
+					/>
 
-						<div>
-							<label className="block text-sm font-medium text-text-secondary mb-1">
-								Описание
-							</label>
-							<textarea
-								value={description}
-								onChange={(e) => setDescription(e.target.value)}
-								placeholder="Опишите подробнее"
-								className="w-full p-2 border border-gray rounded-md"
-								rows={3}
-							/>
-						</div>
+					<TextField
+						label="Описание"
+						value={description}
+						onChange={(e) => setDescription(e.target.value)}
+						fullWidth
+						multiline
+						rows={4}
+					/>
 
-						<div>
-							<label className="block text-sm font-medium text-text-secondary mb-1">
-								Цена
-							</label>
-							<input
-								type="number"
-								value={price}
-								onChange={(e) => setPrice(e.target.value)}
-								placeholder="0"
-								className="w-full p-2 border border-gray rounded-md"
-							/>
-						</div>
+					<TextField
+						label="Цена"
+						value={price}
+						onChange={(e) => {
+							const value = parseFloat(e.target.value);
+							setPrice(isNaN(value) ? 0 : value);
+						}}
+						type="number"
+						fullWidth
+					/>
 
-						<div>
-							<label className="block text-sm font-medium text-text-secondary mb-1">
-								Целевая дата
-							</label>
-							<input
-								type="date"
-								value={targetDate}
-								onChange={(e) => setTargetDate(e.target.value)}
-								className="w-full p-2 border border-gray rounded-md"
-							/>
-						</div>
+					<TextField
+						label="Ссылка на товар"
+						value={productUrl}
+						onChange={(e) => setProductUrl(e.target.value)}
+						fullWidth
+					/>
 
-						<div>
-							<label className="block text-sm font-medium text-text-secondary mb-1">
-								Ссылка на товар
-							</label>
-							<input
-								type="url"
-								value={productUrl}
-								onChange={(e) => setProductUrl(e.target.value)}
-								placeholder="https://..."
-								className="w-full p-2 border border-gray rounded-md"
-							/>
-						</div>
+					<TextField
+						label="Ссылка на изображение"
+						value={imageUrl}
+						onChange={(e) => setImageUrl(e.target.value)}
+						fullWidth
+						helperText="URL изображения товара (необязательно)"
+					/>
+				</Stack>
+			</DialogContent>
 
-						<div>
-							<label className="block text-sm font-medium text-text-secondary mb-1">
-								URL изображения
-							</label>
-							<input
-								type="url"
-								value={imageUrl}
-								onChange={(e) => setImageUrl(e.target.value)}
-								placeholder="https://..."
-								className="w-full p-2 border border-gray rounded-md"
-							/>
-						</div>
-					</div>
-
-					<div className="flex gap-3 mt-6">
-						<button onClick={handleSubmit} className="custom-btn btn-green">
-							Сохранить
-						</button>
-						<button onClick={onClose} className="custom-btn btn-gray">
-							Отмена
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+			<DialogActions>
+				<Button onClick={onClose}>Отмена</Button>
+				<Button
+					onClick={handleSave}
+					variant="contained"
+					color="primary"
+					disabled={!title.trim()}
+				>
+					{isEdit ? "Сохранить" : "Добавить"}
+				</Button>
+			</DialogActions>
+		</Dialog>
 	);
 };
 

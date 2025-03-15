@@ -1,5 +1,31 @@
+import { useState, useEffect } from "react";
 import { Wish } from "../../features/wishes/wishesSlice";
-import { useEffect, useRef } from "react";
+import {
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Button,
+	Typography,
+	Box,
+	Paper,
+	Divider,
+	Chip,
+	IconButton,
+	Tooltip,
+	Fade,
+	Zoom,
+	CircularProgress,
+} from "@mui/material";
+import {
+	Close,
+	CheckCircle,
+	RemoveCircle,
+	Link as LinkIcon,
+	Edit,
+	DeleteOutline,
+} from "@mui/icons-material";
+import WishFormModal from "./WishFormModal"; // Импортируем компонент формы
 
 // Используем те же цвета, что и в WishItem
 const BACKGROUND_COLORS = [
@@ -16,53 +42,125 @@ const BACKGROUND_COLORS = [
 ];
 
 interface WishDetailsProps {
-	wish: Wish;
+	wish: Wish | null;
+	open: boolean;
 	onClose: () => void;
 	onTogglePurchased: (id: string) => void;
+	onEdit: (wish: Wish) => void;
 	onRemove: (id: string) => void;
 }
 
 const WishDetails = ({
 	wish,
+	open,
 	onClose,
 	onTogglePurchased,
+	onEdit,
 	onRemove,
 }: WishDetailsProps) => {
-	// Ref для модального окна
-	const modalRef = useRef<HTMLDivElement>(null);
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [confirmDelete, setConfirmDelete] = useState(false);
+	const [isEditing, setIsEditing] = useState(false);
+	const [localWish, setLocalWish] = useState<Wish | null>(null);
 
-	// Обработчик клика для закрытия при клике вне формы
-	const handleBackdropClick = (e: React.MouseEvent) => {
-		// Если клик произошел по фону (не по содержимому модального окна)
-		if (e.target === e.currentTarget) {
+	// Обновляем локальную копию желания при изменении wish или при открытии/закрытии диалога
+	useEffect(() => {
+		if (wish) {
+			setLocalWish(wish);
+		}
+	}, [wish, open]);
+
+	// Сбрасываем состояния при закрытии модального окна
+	useEffect(() => {
+		if (!open) {
+			setIsProcessing(false);
+			setConfirmDelete(false);
+			setIsEditing(false);
+		}
+	}, [open]);
+
+	if (!localWish) return null;
+
+	const handleTogglePurchased = () => {
+		setIsProcessing(true);
+
+		// Обновляем локальную копию для мгновенной обратной связи
+		setLocalWish((prev) => {
+			if (!prev) return null;
+			return { ...prev, isPurchased: !prev.isPurchased };
+		});
+
+		// Добавляем небольшую задержку для отображения анимации
+		setTimeout(() => {
+			if (localWish) {
+				onTogglePurchased(localWish.id);
+			}
+			setIsProcessing(false);
+		}, 600);
+	};
+
+	const handleRemove = () => {
+		if (confirmDelete) {
+			onRemove(localWish.id);
 			onClose();
+		} else {
+			setConfirmDelete(true);
 		}
 	};
 
-	// Обработчик нажатия клавиши Escape
-	useEffect(() => {
-		const handleEscapeKey = (e: KeyboardEvent) => {
-			if (e.key === "Escape") {
-				onClose();
-			}
+	const handleCancelDelete = () => {
+		setConfirmDelete(false);
+	};
+
+	const handleStartEditing = () => {
+		setIsEditing(true);
+	};
+
+	const handleCancelEditing = () => {
+		setIsEditing(false);
+	};
+
+	// Обработчик для сохранения отредактированного желания
+	const handleSaveEdit = (
+		title: string,
+		description: string,
+		price: number,
+		targetDate: Date | null,
+		productUrl: string,
+		imageUrl: string
+	) => {
+		// Создаем обновленный объект желания
+		const updatedWish: Wish = {
+			...localWish,
+			title,
+			description,
+			price,
+			targetDate: targetDate || undefined,
+			productUrl,
+			imageUrl,
 		};
 
-		// Добавляем обработчик при монтировании
-		document.addEventListener("keydown", handleEscapeKey);
+		// Обновляем локальную копию для мгновенной обратной связи
+		setLocalWish(updatedWish);
 
-		// Убираем обработчик при размонтировании
-		return () => {
-			document.removeEventListener("keydown", handleEscapeKey);
-		};
-	}, [onClose]);
+		// Отправляем обновленные данные
+		onEdit(updatedWish);
 
-	// Форматирование цены
-	const formattedPrice = wish.price
-		? new Intl.NumberFormat("ru-RU", {
-				style: "currency",
-				currency: "KZT",
-		  }).format(wish.price)
-		: "";
+		// Закрываем режим редактирования
+		setIsEditing(false);
+	};
+
+	// Обновленная функция форматирования цены, которая игнорирует нулевые значения
+	const formattedPrice =
+		// Проверяем что цена существует, не равна null/undefined и строго больше нуля
+		localWish.price !== undefined &&
+		localWish.price !== null &&
+		localWish.price > 0
+			? new Intl.NumberFormat("ru-RU", {
+					style: "currency",
+					currency: "KZT",
+			  }).format(localWish.price)
+			: "";
 
 	// Получаем уникальный цвет на основе id желания
 	const getColorForWish = (wishId: string) => {
@@ -73,125 +171,226 @@ const WishDetails = ({
 		return BACKGROUND_COLORS[colorIndex];
 	};
 
-	const hasImage = wish.imageUrl && wish.imageUrl.trim() !== "";
-	const bgColorClass = hasImage ? "" : getColorForWish(wish.id);
+	const hasImage = localWish.imageUrl && localWish.imageUrl.trim() !== "";
+	const bgColorClass = hasImage ? "" : getColorForWish(localWish.id);
+
+	// Если активен режим редактирования, показываем форму WishFormModal
+	if (isEditing) {
+		return (
+			<WishFormModal
+				isEdit={true}
+				initialData={{
+					title: localWish.title,
+					description: localWish.description || "",
+					price: localWish.price || 0,
+					targetDate: localWish.targetDate
+						? new Date(localWish.targetDate)
+						: null,
+					productUrl: localWish.productUrl || "",
+					imageUrl: localWish.imageUrl || "",
+				}}
+				onSave={handleSaveEdit}
+				onClose={handleCancelEditing}
+			/>
+		);
+	}
 
 	return (
-		<div
-			className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-			onClick={handleBackdropClick}
+		<Dialog
+			open={open}
+			onClose={onClose}
+			maxWidth="md"
+			fullWidth
+			TransitionComponent={Zoom}
+			transitionDuration={300}
 		>
-			<div
-				ref={modalRef}
-				className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-				// Предотвращаем всплытие события клика
-				onClick={(e) => e.stopPropagation()}
+			<Box
+				sx={{
+					position: "relative",
+					borderTop: localWish.isPurchased ? "6px solid #4caf50" : "none",
+					transition: "all 0.3s ease",
+				}}
 			>
-				<div className="p-6">
-					<div className="flex justify-between items-start mb-4">
-						<h2
-							className={`text-2xl font-bold ${
-								wish.isPurchased
-									? "line-through text-gray-dark"
-									: "text-text-primary"
-							}`}
-						>
-							{wish.title}
-						</h2>
-						<button
-							onClick={onClose}
-							className="text-2xl text-gray-dark hover:text-text-primary"
-						>
-							×
-						</button>
-					</div>
-
-					{hasImage ? (
-						<div className="mb-6">
-							<img
-								src={wish.imageUrl}
-								alt={wish.title}
-								className="w-full max-h-80 object-contain"
-							/>
-						</div>
-					) : (
-						<div
-							className={`${bgColorClass} text-white rounded-lg p-12 mb-6 text-center`}
-						>
-							<span className="text-6xl block mb-4">★</span>
-							<p className="text-xl font-medium">
-								{wish.price > 0
-									? `Примерная цена: ${formattedPrice}`
-									: "Добавьте изображение для улучшения визуализации"}
-							</p>
-						</div>
-					)}
-
-					<div className="space-y-4">
-						{wish.description && (
-							<div>
-								<h3 className="text-lg font-medium mb-1">Описание</h3>
-								<p className="text-text-secondary">{wish.description}</p>
-							</div>
-						)}
-
-						{wish.price > 0 && (
-							<div>
-								<h3 className="text-lg font-medium mb-1">Цена</h3>
-								<p className="text-primary font-medium">{formattedPrice}</p>
-							</div>
-						)}
-
-						{wish.targetDate && (
-							<div>
-								<h3 className="text-lg font-medium mb-1">Целевая дата</h3>
-								<p>{wish.targetDate.toLocaleDateString()}</p>
-							</div>
-						)}
-
-						{wish.productUrl && (
-							<div>
-								<h3 className="text-lg font-medium mb-1">Ссылка на товар</h3>
-								<a
-									href={wish.productUrl}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-primary hover:underline"
-								>
-									Перейти на сайт
-								</a>
-							</div>
-						)}
-
-						<div>
-							<p className="text-sm text-text-muted">
-								Создано: {wish.createdAt.toLocaleDateString()}
-							</p>
-						</div>
-					</div>
-
-					<div className="flex gap-4 mt-8">
-						<button
-							onClick={() => onTogglePurchased(wish.id)}
-							className={`custom-btn ${
-								wish.isPurchased ? "btn-gray" : "btn-green"
-							}`}
-						>
-							{wish.isPurchased ? "Вернуть" : "Купить"}
-						</button>
-						<button
-							onClick={() => {
-								onRemove(wish.id);
-								onClose();
+				{localWish.isPurchased && (
+					<Fade in={localWish.isPurchased}>
+						<Chip
+							label="У вас уже есть"
+							color="success"
+							size="small"
+							icon={<CheckCircle fontSize="small" />}
+							sx={{
+								position: "absolute",
+								top: 16,
+								right: 60,
+								fontWeight: "bold",
 							}}
-							className="custom-btn btn-red"
+						/>
+					</Fade>
+				)}
+
+				<DialogTitle>
+					<Box
+						display="flex"
+						justifyContent="space-between"
+						alignItems="center"
+					>
+						<Typography
+							variant="h5"
+							component="div"
+							sx={{
+								textDecoration: localWish.isPurchased ? "line-through" : "none",
+								opacity: localWish.isPurchased ? 0.7 : 1,
+								transition: "all 0.3s ease",
+							}}
 						>
-							Удалить
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+							{localWish.title}
+						</Typography>
+						<IconButton onClick={onClose} size="small">
+							<Close />
+						</IconButton>
+					</Box>
+				</DialogTitle>
+
+				<Divider />
+
+				<DialogContent>
+					<Box
+						display="flex"
+						flexDirection={{ xs: "column", sm: "row" }}
+						gap={3}
+					>
+						{hasImage && (
+							<Box
+								component="img"
+								src={localWish.imageUrl}
+								alt={localWish.title}
+								sx={{
+									width: { xs: "100%", sm: 200 },
+									height: { xs: 200, sm: 200 },
+									objectFit: "cover",
+									borderRadius: 2,
+									opacity: localWish.isPurchased ? 0.7 : 1,
+									transition: "opacity 0.3s ease",
+									filter: localWish.isPurchased ? "grayscale(50%)" : "none",
+								}}
+							/>
+						)}
+
+						<Box flex={1}>
+							{localWish.description && (
+								<Typography
+									variant="body1"
+									gutterBottom
+									sx={{
+										opacity: localWish.isPurchased ? 0.7 : 1,
+										transition: "opacity 0.3s ease",
+									}}
+								>
+									{localWish.description}
+								</Typography>
+							)}
+
+							{/* Блок с ценой - показываем только если цена определена и строго больше нуля */}
+							{localWish.price !== undefined &&
+								localWish.price !== null &&
+								localWish.price > 0 && (
+									<Paper
+										elevation={0}
+										sx={{
+											p: 2,
+											bgcolor: "background.paper",
+											mt: 2,
+											borderRadius: 2,
+										}}
+									>
+										<Typography variant="subtitle2" color="text.secondary">
+											Примерная цена:
+										</Typography>
+										<Typography variant="h6" color="primary">
+											{formattedPrice}
+										</Typography>
+									</Paper>
+								)}
+
+							{localWish.productUrl && (
+								<Box mt={2}>
+									<Button
+										variant="outlined"
+										startIcon={<LinkIcon />}
+										href={localWish.productUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										fullWidth
+									>
+										Перейти на сайт
+									</Button>
+								</Box>
+							)}
+						</Box>
+					</Box>
+				</DialogContent>
+
+				<Divider />
+
+				<DialogActions sx={{ p: 2, justifyContent: "space-between" }}>
+					<Box>
+						<Tooltip title="Редактировать">
+							<IconButton
+								onClick={handleStartEditing}
+								color="primary"
+								sx={{ mr: 1 }}
+							>
+								<Edit />
+							</IconButton>
+						</Tooltip>
+
+						<Tooltip title={confirmDelete ? "Подтвердите удаление" : "Удалить"}>
+							<IconButton
+								onClick={handleRemove}
+								color={confirmDelete ? "error" : "default"}
+								sx={{
+									transition: "all 0.2s ease",
+									animation: confirmDelete ? "pulse 1.5s infinite" : "none",
+									"@keyframes pulse": {
+										"0%": { transform: "scale(1)" },
+										"50%": { transform: "scale(1.1)" },
+										"100%": { transform: "scale(1)" },
+									},
+								}}
+							>
+								<DeleteOutline />
+							</IconButton>
+						</Tooltip>
+
+						{confirmDelete && (
+							<Button onClick={handleCancelDelete} size="small" sx={{ ml: 1 }}>
+								Отмена
+							</Button>
+						)}
+					</Box>
+
+					<Button
+						variant={localWish.isPurchased ? "outlined" : "contained"}
+						color={localWish.isPurchased ? "warning" : "success"}
+						onClick={handleTogglePurchased}
+						startIcon={
+							isProcessing ? (
+								<CircularProgress size={20} color="inherit" />
+							) : localWish.isPurchased ? (
+								<RemoveCircle />
+							) : (
+								<CheckCircle />
+							)
+						}
+						disabled={isProcessing}
+					>
+						{localWish.isPurchased
+							? "Отметить как желаемое"
+							: "У меня это уже есть"}
+					</Button>
+				</DialogActions>
+			</Box>
+		</Dialog>
 	);
 };
 
