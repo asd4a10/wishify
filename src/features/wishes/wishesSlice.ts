@@ -11,7 +11,7 @@ export interface Wish {
 	isPurchased: boolean; // было completed
 	username: string;
 	price: number;
-	targetDate: Date;
+	targetDate?: Date; // Делаем targetDate опциональным полем
 	imageUrl: string;
 	productUrl: string;
 	createdAt: Date;

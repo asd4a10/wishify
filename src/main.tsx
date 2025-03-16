@@ -15,11 +15,13 @@ if (!PUBLISHABLE_KEY) {
 }
 
 // Упрощенный импорт Roboto
-import "@fontsource/roboto";
+// import "@fontsource/roboto"; // Удаляем эту строку
+
+// Или альтернатива - добавить только необходимые стили
+import "@fontsource/roboto/400.css"; // Импортируем только обычный вес
 
 // Это более точные импорты, если нужны конкретные веса
 // import "@fontsource/roboto/300.css";
-// import "@fontsource/roboto/400.css";
 // import "@fontsource/roboto/500.css";
 // import "@fontsource/roboto/700.css";
 

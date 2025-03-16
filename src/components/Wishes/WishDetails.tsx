@@ -27,20 +27,6 @@ import {
 } from "@mui/icons-material";
 import WishFormModal from "./WishFormModal"; // Импортируем компонент формы
 
-// Используем те же цвета, что и в WishItem
-const BACKGROUND_COLORS = [
-	"bg-blue-500",
-	"bg-purple-500",
-	"bg-green-500",
-	"bg-yellow-500",
-	"bg-pink-500",
-	"bg-indigo-500",
-	"bg-red-500",
-	"bg-teal-500",
-	"bg-orange-500",
-	"bg-cyan-500",
-];
-
 interface WishDetailsProps {
 	wish: Wish | null;
 	open: boolean;
@@ -162,17 +148,7 @@ const WishDetails = ({
 			  }).format(localWish.price)
 			: "";
 
-	// Получаем уникальный цвет на основе id желания
-	const getColorForWish = (wishId: string) => {
-		const hashSum = wishId
-			.split("")
-			.reduce((sum, char) => sum + char.charCodeAt(0), 0);
-		const colorIndex = hashSum % BACKGROUND_COLORS.length;
-		return BACKGROUND_COLORS[colorIndex];
-	};
-
 	const hasImage = localWish.imageUrl && localWish.imageUrl.trim() !== "";
-	const bgColorClass = hasImage ? "" : getColorForWish(localWish.id);
 
 	// Если активен режим редактирования, показываем форму WishFormModal
 	if (isEditing) {

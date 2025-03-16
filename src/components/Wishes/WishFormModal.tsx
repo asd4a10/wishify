@@ -53,7 +53,7 @@ const WishFormModal = ({
 	const [title, setTitle] = useState(initialData.title);
 	const [description, setDescription] = useState(initialData.description);
 	const [price, setPrice] = useState(initialData.price);
-	const [targetDate, setTargetDate] = useState<Date | null>(
+	const [targetDate /* setTargetDate */] = useState<Date | null>(
 		initialData.targetDate
 	);
 	const [productUrl, setProductUrl] = useState(initialData.productUrl);

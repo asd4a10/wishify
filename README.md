@@ -1,54 +1,74 @@
-# React + TypeScript + Vite
+# 🎁 Wishify - Менеджер списка желаний
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Wishify - это современное веб-приложение для управления вашим списком желаний. Создавайте, редактируйте и отслеживайте свои желания в одном месте. Отмечайте исполненные желания и делитесь своими мечтами с друзьями.
 
-Currently, two official plugins are available:
+## 🌐 Демо
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Посмотрите работающую версию приложения: [https://asd4a10.github.io/wishify/](https://asd4a10.github.io/wishify/)
 
-## Expanding the ESLint configuration
+![Wishify Preview](screenshots/preview.png)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Возможности
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- **Создание желаний**: добавляйте название, описание, цену, ссылку на товар и изображение
+- **Управление желаниями**: редактируйте, удаляйте и отмечайте желания как исполненные
+- **Персонализация**: авторизация пользователей с помощью Clerk
+- **Адаптивный дизайн**: приложение отлично выглядит на компьютерах, планшетах и телефонах
+- **Визуальные эффекты**: плавные анимации и переходы для лучшего пользовательского опыта
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠 Технологии
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Frontend**: React, TypeScript, Vite
+- **State Management**: Redux Toolkit
+- **UI библиотека**: Material-UI, TailwindCSS
+- **Аутентификация**: Clerk
+- **Деплой**: GitHub Pages
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 🚀 Установка и запуск
+
+### Предварительные требования
+
+- Node.js (версия 16.x или выше)
+- npm или yarn
+
+### Шаги установки
+
+1. Клонируйте репозиторий:
+
+   ```
+   git clone https://github.com/your-username/wishify-web.git
+   cd wishify-web
+   ```
+
+2. Установите зависимости:
+
+   ```
+   npm install
+   ```
+
+3. Создайте файл `.env.local` и добавьте свои ключи для Clerk:
+
+   ```
+   VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+   ```
+
+4. Запустите проект в режиме разработки:
+
+   ```
+   npm run dev
+   ```
+
+5. Откройте [http://localhost:5173](http://localhost:5173) в вашем браузере
+
+## 📝 Использование
+
+1. **Регистрация/Вход**: Используйте Clerk для регистрации или входа в приложение
+2. **Добавление желания**: Нажмите на кнопку "Добавить новое желание"
+3. **Управление желаниями**: Нажмите на желание для просмотра деталей
+   - Редактирование: нажмите на иконку карандаша
+   - Удаление: нажмите на иконку корзины
+   - Отметка выполнения: нажмите на кнопку "У меня это уже есть"
+
+## 🧪 Тестирование
+
+Для запуска тестов:
