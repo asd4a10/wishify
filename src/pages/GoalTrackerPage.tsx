@@ -27,6 +27,7 @@ import {
 	FormControl,
 	InputLabel,
 	FormHelperText,
+	Tooltip,
 } from "@mui/material";
 import {
 	Add as AddIcon,
@@ -34,7 +35,7 @@ import {
 	Edit as EditIcon,
 	Check as CheckIcon,
 	EmojiEvents as TrophyIcon,
-	Refresh as RefreshIcon,
+	ArrowForward as ArrowIcon,
 } from "@mui/icons-material";
 import { MentorType } from "./MentorSelectionPage";
 
@@ -55,101 +56,68 @@ interface Goal {
 	progress: number;
 }
 
-// Интерфейс для каждого типа наставника
+// Интерфейс для наставника
 interface MentorFeedback {
 	greeting: string;
 	encouragement: string[];
 	completion: string[];
 	newGoal: string[];
-	progress: string[];
-	noProgress: string[];
 }
 
 // Словарь сообщений для разных типов наставников
 const mentorFeedbacks: Record<MentorType, MentorFeedback> = {
 	friend: {
-		greeting: "Привет! Я рад, что мы вместе работаем над твоими целями!",
+		greeting: "Hi there! Ready to achieve some goals today?",
 		encouragement: [
-			"Ты молодец! Продолжай в том же духе!",
-			"Я верю в тебя! Ты сможешь достичь всего, что задумал.",
-			"Каждый шаг имеет значение. Ты делаешь отличную работу!",
+			"You're doing great! Keep going!",
+			"I believe in you! You can do this!",
+			"Every step counts. I'm proud of your progress!",
 		],
 		completion: [
-			"Ура! Ты справился с задачей! Это потрясающе!",
-			"Какой замечательный успех! Ты должен гордиться собой!",
-			"Отличная работа! Ты всегда достигаешь поставленных целей!",
+			"Awesome job completing your goal! 🎉",
+			"You did it! I knew you could!",
+			"What an achievement! You should be proud!",
 		],
 		newGoal: [
-			"Это отличная новая цель! Давай вместе добьемся успеха!",
-			"Здорово, что ты ставишь новые цели! Я помогу тебе их достичь.",
-			"Это амбициозная цель, но я уверен, что вместе мы справимся!",
-		],
-		progress: [
-			"Ты делаешь успехи! Продолжай в том же духе!",
-			"Я вижу прогресс! Ты двигаешься в правильном направлении.",
-			"Каждый шаг приближает тебя к цели. Молодец!",
-		],
-		noProgress: [
-			"Не волнуйся, если прогресс не такой быстрый, как хотелось бы. Главное - не сдаваться!",
-			"Бывают сложные периоды, но я верю, что ты преодолеешь их.",
-			"Иногда нужно сделать шаг назад, чтобы потом сделать два вперед. Не опускай руки!",
+			"That's an excellent goal to set!",
+			"I'll help you achieve this new goal!",
+			"Let's break down this goal into manageable steps!",
 		],
 	},
 	warrior: {
-		greeting: "Готов к бою? Пора покорять новые вершины!",
+		greeting: "Time to conquer your challenges.",
 		encouragement: [
-			"Преодолей себя! Только так достигается настоящий успех!",
-			"Сила воли - твое главное оружие. Используй его!",
-			"Нет ничего невозможного для того, кто не сдается!",
+			"Push through! Victory awaits those who persevere!",
+			"Pain is temporary, achievement lasts forever!",
+			"No excuses. Only results matter!",
 		],
 		completion: [
-			"Миссия выполнена! Но расслабляться рано, впереди новые вызовы!",
-			"Победа! Но это только начало пути к величию!",
-			"Задача выполнена! Теперь готовься к следующему испытанию!",
+			"Mission accomplished. But the war continues.",
+			"One battle won. Prepare for the next.",
+			"Victory is yours. Well earned.",
 		],
 		newGoal: [
-			"Новая цель - новый вызов! Покажи, на что ты способен!",
-			"Эта цель достойна воина! Бросаю тебе вызов!",
-			"Вижу, ты не боишься трудностей! Эта цель закалит твой характер!",
-		],
-		progress: [
-			"Продвижение есть, но не время расслабляться! Впереди еще много работы!",
-			"Ты на верном пути, воин! Продолжай атаковать!",
-			"Прогресс заметен! Теперь удвой усилия!",
-		],
-		noProgress: [
-			"Застой - это поражение! Соберись и продолжай бой!",
-			"Трудности делают нас сильнее! Преодолей эту преграду!",
-			"Нет времени на жалость к себе! Вставай и продолжай двигаться вперед!",
+			"A worthy challenge. We will conquer it.",
+			"This goal will test your limits. Good.",
+			"Every obstacle is an opportunity for growth.",
 		],
 	},
 	strategist: {
-		greeting:
-			"Приветствую! Давайте разработаем оптимальную стратегию для достижения ваших целей.",
+		greeting: "Let's review your strategy for success today.",
 		encouragement: [
-			"Анализ показывает, что вы на верном пути. Продолжайте следовать плану.",
-			"Ваш подход логичен и эффективен. Результаты не заставят себя ждать.",
-			"Согласно статистике, последовательность действий приводит к успеху в 87% случаев. Продолжайте.",
+			"Your progress indicates a 73% higher chance of success.",
+			"Analyzing your pattern: consistent effort leads to results.",
+			"Statistically speaking, you're on the optimal path.",
 		],
 		completion: [
-			"Цель достигнута! Это доказывает эффективность нашей стратегии.",
-			"Задача выполнена в соответствии с планом. Отличный результат!",
-			"Анализ завершенной цели показывает правильность выбранного подхода. Поздравляю с успешным завершением!",
+			"Goal achieved with optimal efficiency.",
+			"Analysis complete: Success rate 100%. Excellent execution.",
+			"Objective completed. Planning next phase...",
 		],
 		newGoal: [
-			"Интересная задача. Давайте разобьем ее на логические этапы и составим план действий.",
-			"Новая цель требует тщательного анализа. Предлагаю начать с определения ключевых показателей успеха.",
-			"Эта цель вписывается в общую стратегию вашего развития. Давайте интегрируем ее в существующий план.",
-		],
-		progress: [
-			"Прогресс соответствует расчетным показателям. Продолжайте выполнение плана.",
-			"Анализ текущего прогресса показывает, что мы движемся к цели с оптимальной скоростью.",
-			"Ваши действия логичны и последовательны. Это ключевые факторы прогресса.",
-		],
-		noProgress: [
-			"Обнаружена стагнация. Предлагаю пересмотреть стратегию и внести корректировки.",
-			"Отсутствие прогресса - это информация, которую мы можем использовать для оптимизации плана.",
-			"Проведем анализ причин замедления и разработаем альтернативные подходы.",
+			"I've analyzed this goal. It's challenging but achievable.",
+			"Breaking this down into steps will increase success probability by 86%.",
+			"A strategic approach will be essential for this objective.",
 		],
 	},
 };
@@ -198,85 +166,81 @@ const initialGoals: Goal[] = [
 
 const GoalTrackerPage = () => {
 	const navigate = useNavigate();
+	const [selectedMentor, setSelectedMentor] = useState<MentorType | null>(null);
 	const [goals, setGoals] = useState<Goal[]>([]);
 	const [openDialog, setOpenDialog] = useState(false);
+	const [editMode, setEditMode] = useState(false);
+	const [mentorMessage, setMentorMessage] = useState("");
+	const [newStep, setNewStep] = useState("");
 	const [newGoal, setNewGoal] = useState<Partial<Goal>>({
 		title: "",
 		description: "",
-		category: "",
+		category: "personal",
 		priority: "medium",
 		steps: [],
+		completed: false,
+		progress: 0,
 	});
-	const [newStep, setNewStep] = useState("");
-	const [editMode, setEditMode] = useState(false);
-	const [currentGoalId, setCurrentGoalId] = useState<string | null>(null);
-	const [mentorType, setMentorType] = useState<MentorType>("friend");
-	const [mentorMessage, setMentorMessage] = useState("");
 
-	// Получаем тип наставника из localStorage при загрузке компонента
+	// Check if mentor is selected
 	useEffect(() => {
-		const savedMentor = localStorage.getItem(
-			"selectedMentor"
-		) as MentorType | null;
+		const mentor = localStorage.getItem("selectedMentor") as MentorType | null;
 
-		if (!savedMentor) {
-			// Если наставник не выбран, перенаправляем на страницу выбора
+		if (!mentor) {
 			navigate("/select-mentor");
-			return;
+		} else {
+			setSelectedMentor(mentor);
+			// Set initial greeting
+			if (mentorFeedbacks[mentor]) {
+				setMentorMessage(mentorFeedbacks[mentor].greeting);
+			}
 		}
 
-		setMentorType(savedMentor);
-		setMentorMessage(mentorFeedbacks[savedMentor].greeting);
-
-		// Загружаем сохраненные цели из localStorage или используем начальные данные
+		// Load goals from localStorage
 		const savedGoals = localStorage.getItem("goals");
 		if (savedGoals) {
 			setGoals(JSON.parse(savedGoals));
 		} else {
+			// Set some initial goals for demo purposes
 			setGoals(initialGoals);
 		}
 	}, [navigate]);
 
-	// Сохраняем цели в localStorage при их изменении
+	// Save goals to localStorage when changed
 	useEffect(() => {
 		if (goals.length > 0) {
 			localStorage.setItem("goals", JSON.stringify(goals));
 		}
 	}, [goals]);
 
-	// Обработчик для добавления новой цели
-	const handleAddGoal = () => {
-		setOpenDialog(true);
-		setEditMode(false);
+	// Generate random encouragement message
+	const getRandomMessage = (messageType: keyof MentorFeedback) => {
+		if (!selectedMentor) return "";
+
+		const messages = mentorFeedbacks[selectedMentor][messageType];
+		const randomIndex = Math.floor(Math.random() * messages.length);
+		return messages[randomIndex];
+	};
+
+	// Handle adding a new step
+	const handleAddStep = () => {
+		if (!newStep.trim()) return;
+
+		const newStepObj = {
+			id: Date.now().toString(),
+			title: newStep,
+			completed: false,
+		};
+
 		setNewGoal({
-			title: "",
-			description: "",
-			category: "",
-			priority: "medium",
-			steps: [],
+			...newGoal,
+			steps: [...(newGoal.steps || []), newStepObj],
 		});
+
 		setNewStep("");
 	};
 
-	// Обработчик для добавления нового шага
-	const handleAddStep = () => {
-		if (newStep.trim()) {
-			setNewGoal({
-				...newGoal,
-				steps: [
-					...(newGoal.steps || []),
-					{
-						id: `step-${Date.now()}`,
-						title: newStep,
-						completed: false,
-					},
-				],
-			});
-			setNewStep("");
-		}
-	};
-
-	// Обработчик для удаления шага
+	// Handle removing a step
 	const handleRemoveStep = (stepId: string) => {
 		setNewGoal({
 			...newGoal,
@@ -284,247 +248,201 @@ const GoalTrackerPage = () => {
 		});
 	};
 
-	// Обработчик для сохранения цели
+	// Handle saving a goal
 	const handleSaveGoal = () => {
-		if (!newGoal.title) return;
+		if (!newGoal.title?.trim()) return;
 
-		if (editMode && currentGoalId) {
-			// Редактирование существующей цели
-			const updatedGoals = goals.map((goal) =>
-				goal.id === currentGoalId
-					? {
-							...goal,
-							title: newGoal.title || goal.title,
-							description: newGoal.description || goal.description,
-							category: newGoal.category || goal.category,
-							priority: newGoal.priority || goal.priority,
-							steps: newGoal.steps || goal.steps,
-							progress: calculateProgress(newGoal.steps || []),
-					  }
-					: goal
+		if (editMode && newGoal.id) {
+			// Update existing goal
+			setGoals(
+				goals.map((goal) =>
+					goal.id === newGoal.id ? { ...(newGoal as Goal) } : goal
+				)
 			);
-			setGoals(updatedGoals);
-
-			// Показываем сообщение от наставника о прогрессе
-			const randomIndex = Math.floor(
-				Math.random() * mentorFeedbacks[mentorType].progress.length
-			);
-			setMentorMessage(mentorFeedbacks[mentorType].progress[randomIndex]);
+			setMentorMessage(getRandomMessage("encouragement"));
 		} else {
-			// Создание новой цели
-			const newGoalComplete: Goal = {
-				id: `goal-${Date.now()}`,
-				title: newGoal.title || "",
-				description: newGoal.description || "",
-				category: newGoal.category || "Другое",
-				priority: (newGoal.priority as "low" | "medium" | "high") || "medium",
-				steps: newGoal.steps || [],
+			// Add new goal
+			const goal: Goal = {
+				...(newGoal as Goal),
+				id: Date.now().toString(),
 				completed: false,
-				progress: calculateProgress(newGoal.steps || []),
+				progress: 0,
 			};
-
-			setGoals([...goals, newGoalComplete]);
-
-			// Показываем сообщение от наставника о новой цели
-			const randomIndex = Math.floor(
-				Math.random() * mentorFeedbacks[mentorType].newGoal.length
-			);
-			setMentorMessage(mentorFeedbacks[mentorType].newGoal[randomIndex]);
+			setGoals([...goals, goal]);
+			setMentorMessage(getRandomMessage("newGoal"));
 		}
 
 		setOpenDialog(false);
-	};
-
-	// Обработчик для редактирования цели
-	const handleEditGoal = (goal: Goal) => {
-		setCurrentGoalId(goal.id);
 		setNewGoal({
-			title: goal.title,
-			description: goal.description,
-			category: goal.category,
-			priority: goal.priority,
-			steps: [...goal.steps],
+			title: "",
+			description: "",
+			category: "personal",
+			priority: "medium",
+			steps: [],
+			completed: false,
+			progress: 0,
 		});
-		setEditMode(true);
-		setOpenDialog(true);
+		setEditMode(false);
 	};
 
-	// Обработчик для удаления цели
+	// Handle editing a goal
+	const handleEditGoal = (goalId: string) => {
+		const goalToEdit = goals.find((goal) => goal.id === goalId);
+		if (goalToEdit) {
+			setNewGoal(goalToEdit);
+			setEditMode(true);
+			setOpenDialog(true);
+		}
+	};
+
+	// Handle deleting a goal
 	const handleDeleteGoal = (goalId: string) => {
 		setGoals(goals.filter((goal) => goal.id !== goalId));
 	};
 
-	// Обработчик для изменения статуса шага
+	// Handle toggling a step
 	const handleToggleStep = (goalId: string, stepId: string) => {
-		const updatedGoals = goals.map((goal) => {
-			if (goal.id === goalId) {
-				const updatedSteps = goal.steps.map((step) =>
-					step.id === stepId ? { ...step, completed: !step.completed } : step
-				);
-				const progress = calculateProgress(updatedSteps);
-				const completed = progress === 100;
+		setGoals(
+			goals.map((goal) => {
+				if (goal.id === goalId) {
+					const updatedSteps = goal.steps.map((step) =>
+						step.id === stepId ? { ...step, completed: !step.completed } : step
+					);
 
-				return { ...goal, steps: updatedSteps, progress, completed };
-			}
-			return goal;
-		});
+					// Calculate progress
+					const totalSteps = updatedSteps.length;
+					const completedSteps = updatedSteps.filter(
+						(step) => step.completed
+					).length;
+					const progress =
+						totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
-		setGoals(updatedGoals);
+					// Check if all steps are completed
+					const allCompleted = totalSteps > 0 && completedSteps === totalSteps;
 
-		// Определяем, был ли завершен шаг или отменен
-		const goal = goals.find((g) => g.id === goalId);
-		const step = goal?.steps.find((s) => s.id === stepId);
-		const isCompleting = step ? !step.completed : false;
+					if (allCompleted && !goal.completed) {
+						// Goal just completed
+						setMentorMessage(getRandomMessage("completion"));
+					} else if (!allCompleted && goal.completed) {
+						// Goal uncompleted
+						setMentorMessage(getRandomMessage("encouragement"));
+					}
 
-		// Если цель была завершена полностью
-		const updatedGoal = updatedGoals.find((g) => g.id === goalId);
-		if (updatedGoal?.completed) {
-			const randomIndex = Math.floor(
-				Math.random() * mentorFeedbacks[mentorType].completion.length
-			);
-			setMentorMessage(mentorFeedbacks[mentorType].completion[randomIndex]);
-		} else if (isCompleting) {
-			// Если был отмечен шаг как выполненный
-			const randomIndex = Math.floor(
-				Math.random() * mentorFeedbacks[mentorType].progress.length
-			);
-			setMentorMessage(mentorFeedbacks[mentorType].progress[randomIndex]);
-		}
-	};
-
-	// Функция для расчета процента выполнения
-	const calculateProgress = (steps: { completed: boolean }[]) => {
-		if (steps.length === 0) return 0;
-		const completedSteps = steps.filter((step) => step.completed).length;
-		return Math.round((completedSteps / steps.length) * 100);
-	};
-
-	// Обработчик для получения случайного мотивационного сообщения
-	const handleGetMotivation = () => {
-		const randomIndex = Math.floor(
-			Math.random() * mentorFeedbacks[mentorType].encouragement.length
+					return {
+						...goal,
+						steps: updatedSteps,
+						progress,
+						completed: allCompleted,
+					};
+				}
+				return goal;
+			})
 		);
-		setMentorMessage(mentorFeedbacks[mentorType].encouragement[randomIndex]);
-	};
-
-	// Обработчик для смены наставника
-	const handleChangeMentor = () => {
-		navigate("/select-mentor");
 	};
 
 	return (
-		<Container maxWidth="lg" sx={{ py: 4 }}>
-			<Box
-				display="flex"
-				justifyContent="space-between"
-				alignItems="center"
-				mb={4}
-			>
-				<Typography variant="h4" component="h1">
-					Трекер целей
-				</Typography>
+		<Container maxWidth="md" sx={{ py: 2 }}>
+			{/* Mentor Section */}
+			{selectedMentor && (
+				<Paper
+					elevation={0}
+					sx={{
+						p: 3,
+						mb: 4,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+						border: "1px solid #e0e0e0",
+						borderRadius: 2,
+						boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+					}}
+				>
+					<Box display="flex" alignItems="center">
+						<Avatar
+							src={mentorImages[selectedMentor]}
+							sx={{
+								width: 60,
+								height: 60,
+								mr: 2,
+								boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+							}}
+							alt={selectedMentor}
+						/>
+						<Box>
+							<Typography variant="subtitle1" fontWeight="500">
+								{selectedMentor === "friend"
+									? "Supportive Friend"
+									: selectedMentor === "warrior"
+									? "Determined Warrior"
+									: "Strategic Thinker"}
+							</Typography>
+							<Typography variant="body1">{mentorMessage}</Typography>
+						</Box>
+					</Box>
 
+					<Button
+						variant="outlined"
+						size="small"
+						onClick={() => navigate("/select-mentor")}
+						sx={{
+							minWidth: "auto",
+							ml: 2,
+						}}
+					>
+						Change Mentor
+					</Button>
+				</Paper>
+			)}
+
+			{/* Header and Add Button */}
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+					mb: 3,
+				}}
+			>
+				<Typography variant="h5" component="h1">
+					Your Goals
+				</Typography>
 				<Button
 					variant="contained"
+					color="primary"
 					startIcon={<AddIcon />}
-					onClick={handleAddGoal}
+					onClick={() => {
+						setEditMode(false);
+						setOpenDialog(true);
+					}}
+					sx={{
+						borderRadius: 2,
+						textTransform: "none",
+						boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+					}}
 				>
-					Добавить цель
+					Add Goal
 				</Button>
 			</Box>
 
-			{/* Карточка наставника с сообщением */}
-			<Card sx={{ mb: 4, bgcolor: "primary.main", color: "white" }}>
-				<CardContent>
-					<Grid container spacing={2} alignItems="center">
-						<Grid item xs={12} sm={2} sx={{ textAlign: "center" }}>
-							<Avatar
-								src={mentorImages[mentorType]}
+			{/* Goals Grid */}
+			{goals.length > 0 ? (
+				<Grid container spacing={3}>
+					{goals.map((goal) => (
+						<Grid item xs={12} key={goal.id}>
+							<Card
+								elevation={0}
 								sx={{
-									width: 80,
-									height: 80,
-									mx: "auto",
-									border: "2px solid white",
-								}}
-							/>
-							<Typography variant="subtitle1" sx={{ mt: 1 }}>
-								{mentorType === "friend"
-									? "Друг"
-									: mentorType === "warrior"
-									? "Воин"
-									: "Стратег"}
-							</Typography>
-							<Box display="flex" justifyContent="center" mt={1}>
-								<Button
-									variant="outlined"
-									color="inherit"
-									size="small"
-									onClick={handleChangeMentor}
-									sx={{
-										borderColor: "white",
-										"&:hover": {
-											borderColor: "white",
-											bgcolor: "rgba(255,255,255,0.1)",
-										},
-									}}
-								>
-									Сменить
-								</Button>
-							</Box>
-						</Grid>
-						<Grid item xs={12} sm={8}>
-							<Paper
-								sx={{
-									p: 2,
-									bgcolor: "rgba(255,255,255,0.9)",
-									color: "text.primary",
 									borderRadius: 2,
+									border: "1px solid #e0e0e0",
+									boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+									transition: "transform 0.2s",
+									"&:hover": {
+										transform: "translateY(-2px)",
+										boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+									},
 								}}
 							>
-								<Typography variant="body1" sx={{ fontStyle: "italic", mb: 1 }}>
-									{mentorMessage}
-								</Typography>
-							</Paper>
-						</Grid>
-						<Grid item xs={12} sm={2}>
-							<Button
-								variant="contained"
-								fullWidth
-								onClick={handleGetMotivation}
-								sx={{
-									bgcolor: "white",
-									color: "primary.main",
-									"&:hover": { bgcolor: "rgba(255,255,255,0.9)" },
-								}}
-							>
-								Мотивация
-							</Button>
-						</Grid>
-					</Grid>
-				</CardContent>
-			</Card>
-
-			{/* Секция "В процессе" */}
-			<Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
-				В процессе
-			</Typography>
-			<Grid container spacing={3}>
-				{goals.filter((goal) => !goal.completed).length === 0 ? (
-					<Grid item xs={12}>
-						<Paper
-							sx={{ p: 3, textAlign: "center", bgcolor: "background.default" }}
-						>
-							<Typography color="text.secondary">
-								У вас нет активных целей. Добавьте новую цель, чтобы начать!
-							</Typography>
-						</Paper>
-					</Grid>
-				) : (
-					goals
-						.filter((goal) => !goal.completed)
-						.map((goal) => (
-							<Grid item xs={12} md={6} key={goal.id}>
-								<Paper sx={{ p: 3, height: "100%", position: "relative" }}>
+								<CardContent>
 									<Box
 										sx={{
 											display: "flex",
@@ -532,284 +450,274 @@ const GoalTrackerPage = () => {
 											mb: 2,
 										}}
 									>
-										<Typography variant="h6" sx={{ pr: 6 }}>
-											{goal.title}
-										</Typography>
 										<Box>
-											<IconButton
-												size="small"
-												onClick={() => handleEditGoal(goal)}
-											>
-												<EditIcon />
-											</IconButton>
-											<IconButton
-												size="small"
-												color="error"
-												onClick={() => handleDeleteGoal(goal.id)}
-											>
-												<DeleteIcon />
-											</IconButton>
+											<Typography variant="h6" component="h2">
+												{goal.title}
+											</Typography>
+											{goal.description && (
+												<Typography
+													variant="body2"
+													color="text.secondary"
+													sx={{ mb: 1 }}
+												>
+													{goal.description}
+												</Typography>
+											)}
+											<Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+												<Chip
+													size="small"
+													label={goal.category}
+													variant="outlined"
+													sx={{ borderRadius: 1 }}
+												/>
+												<Chip
+													size="small"
+													label={goal.priority}
+													color={
+														goal.priority === "high"
+															? "error"
+															: goal.priority === "medium"
+															? "warning"
+															: "default"
+													}
+													variant="outlined"
+													sx={{ borderRadius: 1 }}
+												/>
+												{goal.completed && (
+													<Chip
+														size="small"
+														label="Completed"
+														color="success"
+														icon={<CheckIcon />}
+														sx={{ borderRadius: 1 }}
+													/>
+												)}
+											</Box>
+										</Box>
+										<Box>
+											<Tooltip title="Edit">
+												<IconButton
+													size="small"
+													onClick={() => handleEditGoal(goal.id)}
+													sx={{ color: "primary.main" }}
+												>
+													<EditIcon fontSize="small" />
+												</IconButton>
+											</Tooltip>
+											<Tooltip title="Delete">
+												<IconButton
+													size="small"
+													onClick={() => handleDeleteGoal(goal.id)}
+													sx={{ color: "error.light" }}
+												>
+													<DeleteIcon fontSize="small" />
+												</IconButton>
+											</Tooltip>
 										</Box>
 									</Box>
 
-									<Chip
-										label={goal.category}
-										size="small"
-										sx={{ mb: 2, bgcolor: "primary.light", color: "white" }}
-									/>
-
-									<Chip
-										label={
-											goal.priority === "high"
-												? "Высокий приоритет"
-												: goal.priority === "medium"
-												? "Средний приоритет"
-												: "Низкий приоритет"
-										}
-										size="small"
-										sx={{
-											ml: 1,
-											mb: 2,
-											bgcolor:
-												goal.priority === "high"
-													? "error.light"
-													: goal.priority === "medium"
-													? "warning.light"
-													: "success.light",
-											color: "white",
-										}}
-									/>
-
-									{goal.description && (
-										<Typography
-											variant="body2"
-											color="text.secondary"
-											sx={{ mb: 2 }}
+									{/* Progress bar */}
+									<Box sx={{ mt: 1, mb: 2 }}>
+										<Box
+											sx={{
+												display: "flex",
+												justifyContent: "space-between",
+												mb: 0.5,
+											}}
 										>
-											{goal.description}
-										</Typography>
-									)}
-
-									<Box sx={{ mb: 2 }}>
+											<Typography variant="body2" color="text.secondary">
+												Progress
+											</Typography>
+											<Typography variant="body2" color="text.secondary">
+												{Math.round(goal.progress)}%
+											</Typography>
+										</Box>
 										<LinearProgress
 											variant="determinate"
 											value={goal.progress}
 											sx={{
-												height: 8,
-												borderRadius: 4,
-												bgcolor: "grey.200",
+												height: 6,
+												borderRadius: 3,
+												bgcolor: "rgba(0,0,0,0.05)",
 											}}
 										/>
-										<Typography
-											variant="body2"
-											color="text.secondary"
-											align="right"
-											sx={{ mt: 1 }}
-										>
-											{Math.round(goal.progress)}% выполнено
-										</Typography>
 									</Box>
 
-									<List dense>
+									{/* Steps */}
+									<Typography variant="subtitle2" gutterBottom>
+										Steps:
+									</Typography>
+									<List dense disablePadding>
 										{goal.steps.map((step) => (
 											<ListItem
 												key={step.id}
-												secondaryAction={
-													<IconButton
-														edge="end"
-														size="small"
-														onClick={() => handleToggleStep(goal.id, step.id)}
-													>
-														{step.completed ? <RefreshIcon /> : <CheckIcon />}
-													</IconButton>
-												}
+												disablePadding
 												sx={{
-													bgcolor: step.completed
-														? "success.50"
-														: "transparent",
-													borderRadius: 1,
-													mb: 0.5,
+													py: 0.5,
+													opacity: step.completed ? 0.7 : 1,
 												}}
 											>
-												<ListItemText
-													primary={step.title}
+												<Chip
+													icon={step.completed ? <CheckIcon /> : undefined}
+													label={step.title}
+													onClick={() => handleToggleStep(goal.id, step.id)}
+													color={step.completed ? "success" : "default"}
+													variant={step.completed ? "filled" : "outlined"}
 													sx={{
+														borderRadius: 1,
 														textDecoration: step.completed
 															? "line-through"
 															: "none",
-														opacity: step.completed ? 0.7 : 1,
+														cursor: "pointer",
+														"&:hover": {
+															bgcolor: step.completed
+																? "success.light"
+																: "primary.light",
+															color: "white",
+														},
 													}}
 												/>
 											</ListItem>
 										))}
 									</List>
-								</Paper>
-							</Grid>
-						))
-				)}
-			</Grid>
-
-			{/* Секция "Завершенные" */}
-			{goals.filter((goal) => goal.completed).length > 0 && (
-				<>
-					<Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
-						Завершенные цели
+								</CardContent>
+							</Card>
+						</Grid>
+					))}
+				</Grid>
+			) : (
+				<Paper
+					elevation={0}
+					sx={{
+						p: 4,
+						textAlign: "center",
+						borderRadius: 2,
+						border: "1px dashed #ccc",
+					}}
+				>
+					<Typography variant="h6" color="text.secondary" gutterBottom>
+						No goals yet
 					</Typography>
-					<Grid container spacing={3}>
-						{goals
-							.filter((goal) => goal.completed)
-							.map((goal) => (
-								<Grid item xs={12} md={6} key={goal.id}>
-									<Paper
-										sx={{ p: 3, bgcolor: "success.50", position: "relative" }}
-									>
-										<TrophyIcon
-											sx={{
-												position: "absolute",
-												right: 16,
-												top: 16,
-												color: "success.main",
-											}}
-										/>
-
-										<Typography variant="h6" sx={{ mb: 2, pr: 6 }}>
-											{goal.title}
-										</Typography>
-
-										<Chip
-											label={goal.category}
-											size="small"
-											sx={{ mb: 2, bgcolor: "success.main", color: "white" }}
-										/>
-
-										{goal.description && (
-											<Typography
-												variant="body2"
-												color="text.secondary"
-												sx={{ mb: 2 }}
-											>
-												{goal.description}
-											</Typography>
-										)}
-
-										<Box
-											sx={{
-												display: "flex",
-												justifyContent: "space-between",
-												mt: 2,
-											}}
-										>
-											<Button
-												variant="outlined"
-												color="error"
-												size="small"
-												startIcon={<DeleteIcon />}
-												onClick={() => handleDeleteGoal(goal.id)}
-											>
-												Удалить
-											</Button>
-										</Box>
-									</Paper>
-								</Grid>
-							))}
-					</Grid>
-				</>
+					<Typography variant="body2" color="text.secondary" paragraph>
+						Start by adding your first goal
+					</Typography>
+					<Button
+						variant="outlined"
+						startIcon={<AddIcon />}
+						onClick={() => {
+							setEditMode(false);
+							setOpenDialog(true);
+						}}
+					>
+						Add Goal
+					</Button>
+				</Paper>
 			)}
 
-			{/* Диалог добавления/редактирования цели */}
+			{/* Dialog for adding/editing goals */}
 			<Dialog
 				open={openDialog}
 				onClose={() => setOpenDialog(false)}
-				maxWidth="md"
+				maxWidth="sm"
 				fullWidth
+				PaperProps={{
+					elevation: 8,
+					sx: { borderRadius: 2 },
+				}}
 			>
-				<DialogTitle>
-					{editMode ? "Редактировать цель" : "Добавить новую цель"}
-				</DialogTitle>
-				<DialogContent>
-					<Grid container spacing={2} sx={{ mt: 1 }}>
+				<DialogTitle>{editMode ? "Edit Goal" : "Add New Goal"}</DialogTitle>
+				<DialogContent dividers>
+					<Grid container spacing={2} sx={{ pt: 1 }}>
 						<Grid item xs={12}>
 							<TextField
-								label="Название цели"
-								value={newGoal.title}
+								label="Goal Title"
+								value={newGoal.title || ""}
 								onChange={(e) =>
 									setNewGoal({ ...newGoal, title: e.target.value })
 								}
 								fullWidth
+								variant="outlined"
+								placeholder="What do you want to achieve?"
 								required
 							/>
 						</Grid>
 						<Grid item xs={12}>
 							<TextField
-								label="Описание"
-								value={newGoal.description}
+								label="Description"
+								value={newGoal.description || ""}
 								onChange={(e) =>
 									setNewGoal({ ...newGoal, description: e.target.value })
 								}
 								fullWidth
 								multiline
-								rows={3}
+								rows={2}
+								variant="outlined"
+								placeholder="Add some details about your goal"
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
-							<TextField
-								label="Категория"
-								value={newGoal.category}
-								onChange={(e) =>
-									setNewGoal({ ...newGoal, category: e.target.value })
-								}
-								fullWidth
-								placeholder="Например: Работа, Спорт, Образование"
-							/>
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							<FormControl fullWidth>
-								<InputLabel>Приоритет</InputLabel>
+							<FormControl fullWidth variant="outlined">
+								<InputLabel>Category</InputLabel>
 								<Select
-									value={newGoal.priority}
-									label="Приоритет"
+									value={newGoal.category || "personal"}
 									onChange={(e) =>
-										setNewGoal({ ...newGoal, priority: e.target.value as any })
+										setNewGoal({ ...newGoal, category: e.target.value })
 									}
+									label="Category"
 								>
-									<MenuItem value="low">Низкий</MenuItem>
-									<MenuItem value="medium">Средний</MenuItem>
-									<MenuItem value="high">Высокий</MenuItem>
+									<MenuItem value="personal">Personal</MenuItem>
+									<MenuItem value="work">Work</MenuItem>
+									<MenuItem value="health">Health</MenuItem>
+									<MenuItem value="education">Education</MenuItem>
+									<MenuItem value="finance">Finance</MenuItem>
 								</Select>
 							</FormControl>
 						</Grid>
-
+						<Grid item xs={12} sm={6}>
+							<FormControl fullWidth variant="outlined">
+								<InputLabel>Priority</InputLabel>
+								<Select
+									value={newGoal.priority || "medium"}
+									onChange={(e) =>
+										setNewGoal({ ...newGoal, priority: e.target.value as any })
+									}
+									label="Priority"
+								>
+									<MenuItem value="low">Low</MenuItem>
+									<MenuItem value="medium">Medium</MenuItem>
+									<MenuItem value="high">High</MenuItem>
+								</Select>
+							</FormControl>
+						</Grid>
 						<Grid item xs={12}>
-							<Divider sx={{ my: 2 }} />
+							<Divider sx={{ my: 1 }} />
 							<Typography variant="subtitle1" gutterBottom>
-								Шаги для достижения цели
+								Steps to achieve this goal
 							</Typography>
 
-							{/* Список существующих шагов */}
-							<List
-								dense
-								sx={{ bgcolor: "background.paper", borderRadius: 1, mb: 2 }}
-							>
-								{(newGoal.steps || []).map((step, index) => (
-									<ListItem
-										key={step.id}
-										secondaryAction={
-											<IconButton
-												edge="end"
-												size="small"
-												onClick={() => handleRemoveStep(step.id)}
-											>
-												<DeleteIcon fontSize="small" />
-											</IconButton>
-										}
-									>
-										<ListItemText primary={`${index + 1}. ${step.title}`} />
-									</ListItem>
-								))}
-								{(newGoal.steps || []).length === 0 && (
+							{/* List of steps */}
+							<List sx={{ bgcolor: "#f9f9f9", borderRadius: 1, mb: 2 }}>
+								{(newGoal.steps || []).length > 0 ? (
+									(newGoal.steps || []).map((step, index) => (
+										<ListItem
+											key={step.id}
+											secondaryAction={
+												<IconButton
+													edge="end"
+													onClick={() => handleRemoveStep(step.id)}
+													size="small"
+												>
+													<DeleteIcon fontSize="small" />
+												</IconButton>
+											}
+										>
+											<ListItemText primary={`${index + 1}. ${step.title}`} />
+										</ListItem>
+									))
+								) : (
 									<ListItem>
 										<ListItemText
-											primary="Нет шагов"
+											primary="No steps added yet"
 											primaryTypographyProps={{
 												color: "text.secondary",
 												fontStyle: "italic",
@@ -819,14 +727,16 @@ const GoalTrackerPage = () => {
 								)}
 							</List>
 
-							{/* Форма добавления шага */}
+							{/* Add step input */}
 							<Box sx={{ display: "flex", gap: 1 }}>
 								<TextField
-									label="Новый шаг"
+									label="New Step"
 									value={newStep}
 									onChange={(e) => setNewStep(e.target.value)}
 									fullWidth
-									placeholder="Введите описание шага"
+									variant="outlined"
+									placeholder="Add a step to achieve your goal"
+									size="small"
 									onKeyPress={(e) => {
 										if (e.key === "Enter") {
 											handleAddStep();
@@ -839,20 +749,27 @@ const GoalTrackerPage = () => {
 									disabled={!newStep.trim()}
 									sx={{ whiteSpace: "nowrap" }}
 								>
-									Добавить шаг
+									Add Step
 								</Button>
 							</Box>
+							<FormHelperText>Press Enter to quickly add a step</FormHelperText>
 						</Grid>
 					</Grid>
 				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setOpenDialog(false)}>Отмена</Button>
+				<DialogActions sx={{ px: 3, py: 2 }}>
+					<Button
+						onClick={() => setOpenDialog(false)}
+						sx={{ color: "text.secondary" }}
+					>
+						Cancel
+					</Button>
 					<Button
 						onClick={handleSaveGoal}
 						variant="contained"
 						disabled={!newGoal.title?.trim()}
+						endIcon={<ArrowIcon />}
 					>
-						{editMode ? "Сохранить" : "Создать"}
+						{editMode ? "Update Goal" : "Create Goal"}
 					</Button>
 				</DialogActions>
 			</Dialog>
