@@ -7,7 +7,7 @@ interface DashboardProps {
 
 const Dashboard = ({ userId }: DashboardProps) => {
 	return (
-		<div className="max-w-5xl mx-auto p-5">
+		<div className="max-w-5xl mx-auto px-5">
 			<header className="mb-8">
 				<div className="flex justify-between items-center">
 					<div className="flex flex-col items-start">

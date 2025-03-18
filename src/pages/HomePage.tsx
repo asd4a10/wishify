@@ -23,7 +23,11 @@ const HomePage = () => {
 						size="large"
 						sx={{ mt: 4 }}
 						onClick={() =>
-							document.querySelector(".cl-rootBox button")?.click()
+							(
+								document.querySelector(
+									".cl-rootBox button"
+								) as HTMLButtonElement
+							)?.click()
 						}
 					>
 						Начать сейчас

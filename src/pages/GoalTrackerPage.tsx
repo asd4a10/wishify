@@ -34,7 +34,6 @@ import {
 	Delete as DeleteIcon,
 	Edit as EditIcon,
 	Check as CheckIcon,
-	EmojiEvents as TrophyIcon,
 	ArrowForward as ArrowIcon,
 } from "@mui/icons-material";
 import { MentorType } from "./MentorSelectionPage";

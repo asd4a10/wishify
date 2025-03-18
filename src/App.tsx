@@ -4,7 +4,7 @@ import {
 	Route,
 	Navigate,
 } from "react-router-dom";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { ThemeProviderWrapper } from "./theme";
 import Layout from "./components/Layout/Layout";
 import HomePage from "./pages/HomePage.tsx";
@@ -13,13 +13,9 @@ import GoalTrackerPage from "./pages/GoalTrackerPage.tsx";
 import MentorSelectionPage from "./pages/MentorSelectionPage.tsx";
 
 import "./App.css";
-import SignInPage from "./components/Auth/SignIn";
-import SignUpPage from "./components/Auth/SignUp";
-import Dashboard from "./components/Dashboard";
-import Welcome from "./components/Welcome";
 
 function App() {
-	const { isSignedIn, user } = useUser();
+	const { isSignedIn } = useUser();
 
 	return (
 		<Router basename={import.meta.env.BASE_URL}>

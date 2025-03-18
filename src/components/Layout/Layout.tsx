@@ -16,7 +16,7 @@ const Layout = () => {
 
 	return (
 		<>
-			<AppBar position="static">
+			<AppBar position="static" sx={{ mb: 0 }}>
 				<Toolbar sx={{ justifyContent: "space-between" }}>
 					<Typography
 						variant="h6"
@@ -49,7 +49,7 @@ const Layout = () => {
 				</Toolbar>
 			</AppBar>
 
-			<Container component="main" sx={{ py: 4 }}>
+			<Container component="main" sx={{ px: 4 }}>
 				<Outlet />
 			</Container>
 
