@@ -1,4 +1,16 @@
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+} from "react-router-dom";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-react";
+import { ThemeProviderWrapper } from "./theme";
+import Layout from "./components/Layout/Layout";
+import HomePage from "./pages/HomePage.tsx";
+import WishesPage from "./pages/WishesPage.tsx";
+import GoalTrackerPage from "./pages/GoalTrackerPage.tsx";
+import MentorSelectionPage from "./pages/MentorSelectionPage.tsx";
 
 import "./App.css";
 import SignInPage from "./components/Auth/SignIn";
@@ -7,25 +19,33 @@ import Dashboard from "./components/Dashboard";
 import Welcome from "./components/Welcome";
 
 function App() {
-	// Получение информации о пользователе
-	const { user } = useUser();
-
-	// Простая маршрутизация для авторизации
-	const path = window.location.pathname;
-
-	if (path === "/sign-in") {
-		return <SignInPage />;
-	} else if (path === "/sign-up") {
-		return <SignUpPage />;
-	}
+	const { isSignedIn, user } = useUser();
 
 	return (
-		<>
-			<SignedIn>{user && <Dashboard userId={user.id} />}</SignedIn>
-			<SignedOut>
-				<Welcome />
-			</SignedOut>
-		</>
+		<Router basename={import.meta.env.BASE_URL}>
+			<ThemeProviderWrapper>
+				<Routes>
+					<Route path="/" element={<Layout />}>
+						<Route index element={<HomePage />} />
+						<Route
+							path="wishes"
+							element={isSignedIn ? <WishesPage /> : <Navigate to="/" />}
+						/>
+						<Route
+							path="goal-tracker"
+							element={isSignedIn ? <GoalTrackerPage /> : <Navigate to="/" />}
+						/>
+						<Route
+							path="select-mentor"
+							element={
+								isSignedIn ? <MentorSelectionPage /> : <Navigate to="/" />
+							}
+						/>
+						<Route path="*" element={<div>Страница не найдена</div>} />
+					</Route>
+				</Routes>
+			</ThemeProviderWrapper>
+		</Router>
 	);
 }
 
