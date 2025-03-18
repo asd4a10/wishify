@@ -4,70 +4,58 @@ import {
 	Box,
 	Typography,
 	Grid,
-	Card,
-	CardContent,
-	CardMedia,
+	Paper,
 	Button,
 	Container,
-	Paper,
-	Fade,
+	Radio,
+	Card,
+	CardContent,
+	CardActionArea,
 } from "@mui/material";
 
-// Типы наставников
+// Mentor types
 export type MentorType = "friend" | "warrior" | "strategist";
 
-// Интерфейс для наставника
+// Mentor interface
 interface Mentor {
 	id: MentorType;
 	name: string;
 	description: string;
+	traits: string[];
+	quote: string;
 	imageUrl: string;
-	qualities: string[];
-	motivation: string;
 }
 
-// Данные о наставниках
+// Mentor data
 const mentors: Mentor[] = [
 	{
 		id: "friend",
-		name: "Дружелюбный наставник",
+		name: "Supportive Friend",
 		description:
-			"Поддерживающий и мотивирующий друг, который всегда рядом, чтобы помочь вам в достижении ваших целей.",
+			"A kind and encouraging mentor who believes in your potential.",
+		traits: ["Supportive", "Patient", "Understanding"],
+		quote: "I believe in you! We'll achieve your goals together!",
 		imageUrl:
-			"https://img.freepik.com/free-photo/3d-illustration-cartoon-character-with-glasses-jacket_1142-32498.jpg?w=996&t=st=1700924558~exp=1700925158~hmac=6f3f7f3b9f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
-		qualities: ["Поддерживающий", "Терпеливый", "Понимающий", "Мотивирующий"],
-		motivation: "Я верю в тебя! Мы вместе достигнем твоих целей!",
+			"https://cdn.vox-cdn.com/uploads/chorus_image/image/70412073/0377c76083423a1414e4001161e0cdffb0b36e1f_760x427.0.png",
 	},
 	{
 		id: "warrior",
-		name: "Воин-одиночка",
-		description:
-			"Бескомпромиссный и целеустремленный наставник, который поможет вам преодолеть любые трудности на пути к успеху.",
+		name: "Determined Warrior",
+		description: "A disciplined mentor who pushes you beyond your limits.",
+		traits: ["Disciplined", "Determined", "Focused"],
+		quote: "Overcome yourself! Each step is a victory over weakness!",
 		imageUrl:
-			"https://img.freepik.com/free-photo/3d-illustration-cartoon-muscular-character-with-beard-glasses_1142-41887.jpg?w=996&t=st=1700924668~exp=1700925268~hmac=6f3f7f3b9f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
-		qualities: [
-			"Дисциплинированный",
-			"Решительный",
-			"Бескомпромиссный",
-			"Сильный",
-		],
-		motivation: "Преодолей себя! Каждый шаг - это победа над слабостью!",
+			"https://static.wikia.nocookie.net/dragonball/images/e/e5/VegetaItsOver9000-02.png/revision/latest/scale-to-width-down/800?cb=20211127222707",
 	},
 	{
 		id: "strategist",
-		name: "Стратег",
-		description:
-			"Аналитический и методичный наставник, который поможет вам разработать оптимальный план достижения ваших целей.",
+		name: "Strategic Thinker",
+		description: "An analytical mentor who helps you create effective plans.",
+		traits: ["Analytical", "Methodical", "Organized"],
+		quote:
+			"The right strategy is the key to success. Let's break down your goals step by step.",
 		imageUrl:
-			"https://img.freepik.com/free-photo/3d-illustration-cartoon-character-with-glasses-bow-tie_1142-32490.jpg?w=996&t=st=1700924758~exp=1700925358~hmac=6f3f7f3b9f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
-		qualities: [
-			"Аналитический",
-			"Методичный",
-			"Организованный",
-			"Рациональный",
-		],
-		motivation:
-			"Правильная стратегия - залог успеха. Давай разберем твои цели шаг за шагом.",
+			"https://cdn.vox-cdn.com/thumbor/IkFXS-gWpkOrvaSKr8hNAA1i5bY=/0x0:720x480/1400x1050/filters:focal(0x0:720x480):format(jpeg)/cdn.vox-cdn.com/uploads/chorus_image/image/30661345/death_note_l.0.jpg",
 	},
 ];
 
@@ -81,116 +69,125 @@ const MentorSelectionPage = () => {
 
 	const handleConfirm = () => {
 		if (selectedMentor) {
-			// Сохраняем выбор наставника в localStorage
+			// Save mentor choice to localStorage
 			localStorage.setItem("selectedMentor", selectedMentor);
-			// Переходим на страницу трекера целей
+			// Go to goal tracker page
 			navigate("/goal-tracker");
 		}
 	};
 
 	return (
-		<Container maxWidth="lg" sx={{ py: 4 }}>
-			<Box textAlign="center" mb={6}>
-				<Typography variant="h3" component="h1" gutterBottom>
-					Выберите своего наставника
+		<Container maxWidth="md">
+			<Box textAlign="center" my={4}>
+				<Typography variant="h4" component="h1" gutterBottom>
+					Choose Your Mentor
 				</Typography>
-				<Typography variant="h6" color="text.secondary">
-					Каждый наставник имеет свой уникальный стиль мотивации и поддержки
+				<Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+					Select a mentor style that fits your motivational needs
 				</Typography>
 			</Box>
 
-			<Grid container spacing={4} justifyContent="center">
-				{mentors.map((mentor) => (
-					<Grid item xs={12} md={4} key={mentor.id}>
-						<Card
-							sx={{
-								height: "100%",
-								display: "flex",
-								flexDirection: "column",
-								cursor: "pointer",
-								transition: "transform 0.2s, box-shadow 0.2s",
-								transform:
-									selectedMentor === mentor.id ? "scale(1.03)" : "scale(1)",
-								boxShadow:
-									selectedMentor === mentor.id
-										? "0 8px 24px rgba(0,0,0,0.15)"
-										: "",
-								border: selectedMentor === mentor.id ? "2px solid #3f51b5" : "",
-							}}
-							onClick={() => handleSelectMentor(mentor.id)}
-						>
-							<CardMedia
-								component="img"
-								height="240"
-								image={mentor.imageUrl}
-								alt={mentor.name}
-							/>
-							<CardContent sx={{ flexGrow: 1 }}>
-								<Typography gutterBottom variant="h5" component="div">
-									{mentor.name}
-								</Typography>
-								<Typography variant="body2" color="text.secondary" paragraph>
-									{mentor.description}
-								</Typography>
-								<Paper
-									elevation={0}
-									sx={{ p: 2, bgcolor: "background.default", mt: 2 }}
-								>
-									<Typography
-										variant="subtitle2"
-										color="text.primary"
-										gutterBottom
-									>
-										Качества:
-									</Typography>
-									<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-										{mentor.qualities.map((quality, index) => (
-											<Box
-												key={index}
-												sx={{
-													px: 1.5,
-													py: 0.5,
-													bgcolor: "primary.light",
-													color: "white",
-													borderRadius: 4,
-													fontSize: "0.8rem",
-												}}
-											>
-												{quality}
-											</Box>
-										))}
-									</Box>
-								</Paper>
-								<Box
-									mt={2}
-									p={2}
-									bgcolor="background.paper"
-									borderRadius={1}
-									sx={{ fontStyle: "italic" }}
-								>
-									<Typography variant="body2" color="text.primary">
-										"{mentor.motivation}"
-									</Typography>
-								</Box>
-							</CardContent>
-						</Card>
-					</Grid>
-				))}
-			</Grid>
+			<Paper elevation={2} sx={{ p: 3, mb: 4 }}>
+				<Grid container spacing={3}>
+					{mentors.map((mentor) => (
+						<Grid item xs={12} key={mentor.id}>
+							<Card
+								variant="outlined"
+								sx={{
+									transition: "all 0.2s ease",
+									border:
+										selectedMentor === mentor.id
+											? "2px solid #3f51b5"
+											: "1px solid rgba(0,0,0,0.12)",
+									bgcolor:
+										selectedMentor === mentor.id
+											? "rgba(63,81,181,0.05)"
+											: "transparent",
+									"&:hover": {
+										borderColor: "primary.main",
+										bgcolor: "rgba(63,81,181,0.02)",
+										cursor: "pointer",
+									},
+								}}
+							>
+								<CardActionArea onClick={() => handleSelectMentor(mentor.id)}>
+									<CardContent>
+										<Box display="flex" alignItems="flex-start">
+											<Radio
+												checked={selectedMentor === mentor.id}
+												onChange={() => {}} // Empty handler since we handle click on the card
+												onClick={(e) => e.stopPropagation()} // Prevent double triggering
+												sx={{ mr: 1, mt: -1 }}
+											/>
+											<Box>
+												<Typography variant="h6">{mentor.name}</Typography>
+												<Typography
+													variant="body2"
+													color="text.secondary"
+													paragraph
+												>
+													{mentor.description}
+												</Typography>
 
-			<Box textAlign="center" mt={6}>
+												<Box
+													sx={{
+														display: "flex",
+														flexWrap: "wrap",
+														mb: 1,
+														gap: 1,
+													}}
+												>
+													{mentor.traits.map((trait, index) => (
+														<Typography
+															key={index}
+															variant="caption"
+															component="span"
+															sx={{
+																px: 1,
+																py: 0.5,
+																bgcolor: "background.paper",
+																border: "1px solid",
+																borderColor: "divider",
+																borderRadius: 1,
+																fontWeight: 500,
+															}}
+														>
+															{trait}
+														</Typography>
+													))}
+												</Box>
+
+												<Typography
+													variant="body2"
+													sx={{
+														fontStyle: "italic",
+														color:
+															selectedMentor === mentor.id
+																? "primary.main"
+																: "text.secondary",
+														mt: 1,
+													}}
+												>
+													"{mentor.quote}"
+												</Typography>
+											</Box>
+										</Box>
+									</CardContent>
+								</CardActionArea>
+							</Card>
+						</Grid>
+					))}
+				</Grid>
+			</Paper>
+
+			<Box textAlign="center" mt={4} mb={2}>
 				<Button
 					variant="contained"
 					size="large"
 					onClick={handleConfirm}
 					disabled={!selectedMentor}
-					sx={{
-						px: 4,
-						py: 1.5,
-						fontSize: "1.1rem",
-					}}
 				>
-					Подтвердить выбор
+					Confirm Selection
 				</Button>
 			</Box>
 		</Container>
