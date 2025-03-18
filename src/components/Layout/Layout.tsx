@@ -17,11 +17,15 @@ const Layout = () => {
 	return (
 		<>
 			<AppBar position="static">
-				<Toolbar>
+				<Toolbar sx={{ justifyContent: "space-between" }}>
 					<Typography
 						variant="h6"
 						component="div"
-						sx={{ flexGrow: 1, cursor: "pointer" }}
+						sx={{
+							cursor: "pointer",
+							textAlign: "left",
+							marginRight: "auto",
+						}}
 						onClick={() => navigate("/")}
 					>
 						Wishify
